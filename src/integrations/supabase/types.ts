@@ -14,6 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
+      amizades: {
+        Row: {
+          amigo_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amigo_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amigo_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      comentarios_mural: {
+        Row: {
+          comentario: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          comentario: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          comentario?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comentarios_mural_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_mural"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mensagens: {
+        Row: {
+          created_at: string
+          destinatario_id: string
+          id: string
+          lida: boolean | null
+          mensagem: string
+          remetente_id: string
+        }
+        Insert: {
+          created_at?: string
+          destinatario_id: string
+          id?: string
+          lida?: boolean | null
+          mensagem: string
+          remetente_id: string
+        }
+        Update: {
+          created_at?: string
+          destinatario_id?: string
+          id?: string
+          lida?: boolean | null
+          mensagem?: string
+          remetente_id?: string
+        }
+        Relationships: []
+      }
+      posts_mural: {
+        Row: {
+          conteudo: string
+          created_at: string
+          id: string
+          simulado_id: string | null
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          conteudo: string
+          created_at?: string
+          id?: string
+          simulado_id?: string | null
+          tipo?: string
+          user_id: string
+        }
+        Update: {
+          conteudo?: string
+          created_at?: string
+          id?: string
+          simulado_id?: string | null
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_mural_simulado_id_fkey"
+            columns: ["simulado_id"]
+            isOneToOne: false
+            referencedRelation: "simulados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           area_forte: string | null
@@ -50,6 +171,127 @@ export type Database = {
           nome?: string
           sobrenome?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      questoes: {
+        Row: {
+          alternativas: Json
+          created_at: string
+          enunciado: string
+          explicacao: string | null
+          id: string
+          ordem: number
+          resposta_correta: string
+          resposta_usuario: string | null
+          simulado_id: string
+        }
+        Insert: {
+          alternativas: Json
+          created_at?: string
+          enunciado: string
+          explicacao?: string | null
+          id?: string
+          ordem: number
+          resposta_correta: string
+          resposta_usuario?: string | null
+          simulado_id: string
+        }
+        Update: {
+          alternativas?: Json
+          created_at?: string
+          enunciado?: string
+          explicacao?: string | null
+          id?: string
+          ordem?: number
+          resposta_correta?: string
+          resposta_usuario?: string | null
+          simulado_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questoes_simulado_id_fkey"
+            columns: ["simulado_id"]
+            isOneToOne: false
+            referencedRelation: "simulados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reacoes_mural: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reacoes_mural_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts_mural"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulados: {
+        Row: {
+          acertos: number
+          created_at: string
+          finished_at: string | null
+          id: string
+          materia: string
+          percentual_acerto: number | null
+          status: string
+          tema: string
+          tempo_gasto: number | null
+          titulo: string
+          total_questoes: number
+          user_id: string
+        }
+        Insert: {
+          acertos?: number
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          materia: string
+          percentual_acerto?: number | null
+          status?: string
+          tema: string
+          tempo_gasto?: number | null
+          titulo: string
+          total_questoes: number
+          user_id: string
+        }
+        Update: {
+          acertos?: number
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          materia?: string
+          percentual_acerto?: number | null
+          status?: string
+          tema?: string
+          tempo_gasto?: number | null
+          titulo?: string
+          total_questoes?: number
+          user_id?: string
         }
         Relationships: []
       }
