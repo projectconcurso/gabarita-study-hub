@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          area_forte: string | null
+          area_fraca: string | null
+          cargo_desejado: string | null
+          created_at: string
+          data_prova: string | null
+          foto_url: string | null
+          id: string
+          nome: string
+          sobrenome: string
+          updated_at: string
+        }
+        Insert: {
+          area_forte?: string | null
+          area_fraca?: string | null
+          cargo_desejado?: string | null
+          created_at?: string
+          data_prova?: string | null
+          foto_url?: string | null
+          id: string
+          nome: string
+          sobrenome: string
+          updated_at?: string
+        }
+        Update: {
+          area_forte?: string | null
+          area_fraca?: string | null
+          cargo_desejado?: string | null
+          created_at?: string
+          data_prova?: string | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          sobrenome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

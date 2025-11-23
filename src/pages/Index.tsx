@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Brain, Users, TrendingUp, Target, MessageCircle, Award } from "lucide-react";
@@ -30,10 +31,14 @@ const Index = () => {
             </a>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="ghost">Entrar</Button>
-            <Button className="bg-gradient-hero hover:opacity-90 transition-opacity">
-              Começar Grátis
-            </Button>
+            <Link to="/auth">
+              <Button variant="ghost">Entrar</Button>
+            </Link>
+            <Link to="/auth">
+              <Button className="bg-gradient-hero hover:opacity-90 transition-opacity">
+                Começar Grátis
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -57,12 +62,16 @@ const Index = () => {
                 Simulados personalizados, comunidade ativa e IA que te guia para o sucesso em concursos e ENEM.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button size="lg" className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg h-14 px-8 shadow-medium">
-                  Começar Agora
-                </Button>
-                <Button size="lg" variant="outline" className="text-lg h-14 px-8">
-                  Ver Como Funciona
-                </Button>
+                <Link to="/auth">
+                  <Button size="lg" className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg h-14 px-8 shadow-medium">
+                    Começar Agora
+                  </Button>
+                </Link>
+                <a href="#how-it-works">
+                  <Button size="lg" variant="outline" className="text-lg h-14 px-8">
+                    Ver Como Funciona
+                  </Button>
+                </a>
               </div>
               <div className="flex items-center gap-8 pt-6">
                 <div>
@@ -223,9 +232,11 @@ const Index = () => {
               Junte-se a milhares de estudantes que já estão transformando seus resultados com o Gabarita
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg h-14 px-8 shadow-strong">
-                Começar Gratuitamente
-              </Button>
+              <Link to="/auth">
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg h-14 px-8 shadow-strong">
+                  Começar Gratuitamente
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 text-lg h-14 px-8">
                 Falar com Especialista
               </Button>
