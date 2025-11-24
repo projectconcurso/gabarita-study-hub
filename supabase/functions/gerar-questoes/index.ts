@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
@@ -19,7 +20,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Gerar questões usando Lovable AI
+    // Gerar questões usando OpenAI GPT-5
     const prompt = `Gere ${numQuestoes} questões de múltipla escolha sobre ${tema} - ${materia}${banca ? ` no estilo da banca ${banca}` : ''}.
 
 Cada questão deve ter:
@@ -28,7 +29,7 @@ Cada questão deve ter:
 - Uma resposta correta
 - Uma explicação detalhada
 
-Retorne um JSON array com este formato:
+Retorne APENAS um JSON array com este formato exato, sem texto adicional:
 [
   {
     "enunciado": "texto da questão",
@@ -44,26 +45,53 @@ Retorne um JSON array com este formato:
   }
 ]`;
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY não configurada');
+    }
+
+    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-5-2025-08-07',
         messages: [
+          {
+            role: 'system',
+            content: 'Você é um especialista em criar questões de concursos e vestibulares. Retorne apenas JSON válido, sem texto adicional.'
+          },
           {
             role: 'user',
             content: prompt
           }
         ],
+        max_completion_tokens: 4000,
         response_format: { type: 'json_object' }
       }),
     });
 
+    if (!aiResponse.ok) {
+      const errorText = await aiResponse.text();
+      console.error('Erro OpenAI:', aiResponse.status, errorText);
+      throw new Error(`Erro na API OpenAI: ${aiResponse.status}`);
+    }
+
     const aiData = await aiResponse.json();
-    const questoesGeradas = JSON.parse(aiData.choices[0].message.content);
+    const content = aiData.choices[0].message.content;
+    
+    // Parse o JSON retornado
+    let questoesGeradas;
+    try {
+      // Tenta parsear diretamente como array
+      questoesGeradas = JSON.parse(content);
+    } catch {
+      // Se falhar, pode estar dentro de um objeto
+      const parsed = JSON.parse(content);
+      questoesGeradas = Array.isArray(parsed) ? parsed : parsed.questoes || [];
+    }
 
     // Inserir questões no banco
     const questoesParaInserir = questoesGeradas.map((q: any, index: number) => ({
