@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Brain, Users, TrendingUp, Target, MessageCircle, Award } from "lucide-react";
-import heroImage from "@/assets/hero-image.jpg";
+import { Users, TrendingUp, Target, MessageCircle, Award, Sparkles, Brain } from "lucide-react";
+import { FocaLogo } from "@/components/FocaMascot";
 import featureAi from "@/assets/feature-ai.png";
 import featureSocial from "@/assets/feature-social.png";
 import featureProgress from "@/assets/feature-progress.png";
@@ -11,114 +11,178 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
-              Gabarita
-            </h1>
-          </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Recursos
-            </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              Como Funciona
-            </a>
-            <a href="#community" className="text-muted-foreground hover:text-foreground transition-colors">
-              Comunidade
-            </a>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link to="/auth">
-              <Button variant="ghost">Entrar</Button>
-            </Link>
-            <Link to="/auth">
-              <Button className="bg-gradient-hero hover:opacity-90 transition-opacity">
-                Começar Grátis
-              </Button>
-            </Link>
+      <header className="sticky top-4 z-50">
+        <div className="container mx-auto px-4">
+          <div className="mx-auto flex max-w-6xl items-center justify-between rounded-[1.7rem] border-4 border-border bg-white/95 px-5 py-3 shadow-strong backdrop-blur-sm">
+            <FocaLogo />
+            <nav className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-sm font-black uppercase text-foreground transition-colors hover:text-primary">
+                Recursos
+              </a>
+              <a href="#how-it-works" className="text-sm font-black uppercase text-foreground transition-colors hover:text-primary">
+                Como Funciona
+              </a>
+              <a href="#community" className="text-sm font-black uppercase text-foreground transition-colors hover:text-primary">
+                Comunidade
+              </a>
+            </nav>
+            <div className="flex items-center gap-3">
+              <Link to="/login">
+                <Button variant="outline" className="rounded-full border-2 border-border bg-white px-6 text-foreground hover:bg-muted hover:text-foreground font-black uppercase">
+                  Entrar
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="rounded-full border-2 border-border bg-primary text-primary-foreground px-6 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+                  Começar Grátis
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-hero opacity-10"></div>
-        <div className="container mx-auto px-4 py-20 md:py-32">
+      <section className="relative overflow-hidden bg-background">
+        <div className="container mx-auto px-4 pb-20 pt-12 md:pb-32 md:pt-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6 animate-fade-in">
-              <div className="inline-block px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-full text-secondary font-medium text-sm">
-                ✨ Prepare-se com Inteligência Artificial
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground border-2 border-border rounded-full text-sm font-black uppercase tracking-wide shadow-soft">
+                <Sparkles className="w-4 h-4" />
+                Estude com estratégia
               </div>
-              <h2 className="text-4xl md:text-6xl font-bold leading-tight">
-                Sua jornada para a
-                <span className="block bg-gradient-success bg-clip-text text-transparent">
-                  aprovação começa aqui
+              <h2 className="text-5xl md:text-7xl font-black leading-[0.95] text-foreground uppercase">
+                O jeito mais
+                <span className="block text-primary">
+                  vibrante de
+                </span>
+                <span className="block text-accent">
+                  estudar melhor
                 </span>
               </h2>
-              <p className="text-xl text-muted-foreground">
-                Simulados personalizados, comunidade ativa e IA que te guia para o sucesso em concursos e ENEM.
+              <p className="text-xl text-muted-foreground max-w-xl font-semibold">
+                Simulados com IA, comunidade, progresso visual e uma experiência com personalidade para concursos e ENEM.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link to="/auth">
-                  <Button size="lg" className="bg-gradient-hero hover:opacity-90 transition-opacity text-lg h-14 px-8 shadow-medium">
+                <Link to="/signup">
+                  <Button size="lg" className="text-lg h-14 px-8 rounded-full border-2 border-border bg-accent text-accent-foreground shadow-medium hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none">
                     Começar Agora
                   </Button>
                 </Link>
                 <a href="#how-it-works">
-                  <Button size="lg" variant="outline" className="text-lg h-14 px-8">
-                    Ver Como Funciona
+                  <Button size="lg" variant="outline" className="text-lg h-14 px-8 rounded-full border-2 border-border bg-white hover:bg-muted">
+                    Como Funciona
                   </Button>
                 </a>
               </div>
-              <div className="flex items-center gap-8 pt-6">
-                <div>
-                  <div className="text-3xl font-bold text-primary">10k+</div>
-                  <div className="text-sm text-muted-foreground">Estudantes ativos</div>
+              <div className="grid grid-cols-3 gap-4 pt-6 max-w-xl">
+                <div className="rounded-[1.5rem] border-2 border-border bg-white px-4 py-5 shadow-soft">
+                  <div className="text-3xl font-black text-primary">10k+</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Estudantes ativos</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-secondary">50k+</div>
-                  <div className="text-sm text-muted-foreground">Simulados realizados</div>
+                <div className="rounded-[1.5rem] border-2 border-border bg-white px-4 py-5 shadow-soft">
+                  <div className="text-3xl font-black text-secondary">50k+</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Simulados</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-accent">95%</div>
-                  <div className="text-sm text-muted-foreground">Taxa de satisfação</div>
+                <div className="rounded-[1.5rem] border-2 border-border bg-white px-4 py-5 shadow-soft">
+                  <div className="text-3xl font-black text-accent">95%</div>
+                  <div className="text-sm font-semibold text-muted-foreground">Satisfação</div>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-hero opacity-20 blur-3xl rounded-full"></div>
-              <img
-                src={heroImage}
-                alt="Plataforma Gabarita"
-                className="relative rounded-2xl shadow-strong w-full"
-              />
+            <div className="grid grid-cols-2 gap-4 md:pl-8">
+              <div className="col-span-2 rounded-[2rem] border-4 border-border bg-primary p-5 shadow-strong">
+                <div className="grid gap-4 rounded-[1.5rem] border-2 border-border bg-white p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-2">
+                      <div className="inline-flex rounded-full border-2 border-border bg-[#f7cf3d] px-3 py-1 text-xs font-black uppercase tracking-wide text-foreground">
+                        Painel inteligente
+                      </div>
+                      <h3 className="text-3xl font-black uppercase leading-none text-foreground">
+                        Estudo com ritmo, meta e clareza
+                      </h3>
+                    </div>
+                    <div className="rounded-[1.2rem] border-2 border-border bg-secondary px-4 py-3 text-right shadow-soft">
+                      <div className="text-xs font-black uppercase tracking-wide text-secondary-foreground">Hoje</div>
+                      <div className="text-2xl font-black text-secondary-foreground">+18 pts</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="rounded-[1.3rem] border-2 border-border bg-accent p-4 text-accent-foreground shadow-soft">
+                      <div className="text-xs font-black uppercase tracking-wide">Foco</div>
+                      <div className="mt-2 text-3xl font-black leading-none">87%</div>
+                      <div className="mt-2 text-xs font-semibold opacity-90">Ritmo semanal</div>
+                    </div>
+                    <div className="rounded-[1.3rem] border-2 border-border bg-[#f7cf3d] p-4 text-foreground shadow-soft">
+                      <div className="text-xs font-black uppercase tracking-wide">Meta</div>
+                      <div className="mt-2 text-3xl font-black leading-none">32</div>
+                      <div className="mt-2 text-xs font-semibold">questões hoje</div>
+                    </div>
+                    <div className="rounded-[1.3rem] border-2 border-border bg-muted p-4 text-foreground shadow-soft">
+                      <div className="text-xs font-black uppercase tracking-wide">Rede</div>
+                      <div className="mt-2 text-3xl font-black leading-none">12</div>
+                      <div className="mt-2 text-xs font-semibold">amigos ativos</div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-[1.2fr_0.8fr] gap-3">
+                    <div className="rounded-[1.3rem] border-2 border-border bg-foreground p-4 text-background shadow-soft">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-black uppercase tracking-wide">Próximo simulado</span>
+                        <span className="rounded-full border-2 border-background px-3 py-1 text-[10px] font-black uppercase tracking-wide">IA ativa</span>
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <div className="h-3 w-3/4 rounded-full bg-background" />
+                        <div className="h-3 w-1/2 rounded-full bg-background/80" />
+                        <div className="h-3 w-2/3 rounded-full bg-background/60" />
+                      </div>
+                    </div>
+                    <div className="rounded-[1.3rem] border-2 border-border bg-white p-4 shadow-soft">
+                      <div className="text-xs font-black uppercase tracking-wide text-muted-foreground">Checklist</div>
+                      <div className="mt-3 space-y-2">
+                        <div className="rounded-full border-2 border-border bg-secondary px-3 py-2 text-xs font-black uppercase text-secondary-foreground">Revisão</div>
+                        <div className="rounded-full border-2 border-border bg-accent px-3 py-2 text-xs font-black uppercase text-accent-foreground">Questões</div>
+                        <div className="rounded-full border-2 border-border bg-[#f7cf3d] px-3 py-2 text-xs font-black uppercase text-foreground">Mural</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="rounded-[2rem] border-4 border-border bg-accent p-6 text-accent-foreground shadow-medium">
+                <div className="text-sm font-black uppercase tracking-wide">IA</div>
+                <div className="mt-3 text-3xl font-black leading-none">Questões novas</div>
+                <div className="mt-3 text-sm font-semibold opacity-90">Personalizadas para o seu objetivo.</div>
+              </div>
+              <div className="rounded-[2rem] border-4 border-border bg-[#f7cf3d] p-6 text-foreground shadow-medium">
+                <div className="text-sm font-black uppercase tracking-wide">Comunidade</div>
+                <div className="mt-3 text-3xl font-black leading-none">Estude junto</div>
+                <div className="mt-3 text-sm font-semibold">Troque metas, progresso e motivação.</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-muted/30">
+      <section id="features" className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold">
+            <h3 className="text-3xl md:text-5xl font-black uppercase">
               Recursos que fazem a diferença
             </h3>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Tecnologia de ponta para potencializar seus estudos
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-semibold">
+              Uma experiência visual forte, simples de usar e centrada na rotina de estudos.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="p-8 space-y-4 hover:shadow-medium transition-all hover:-translate-y-1 bg-gradient-card border-border/50">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center">
+            <Card className="p-8 space-y-4 bg-white border-4 border-border shadow-medium rounded-[2rem]">
+              <div className="w-16 h-16 bg-primary rounded-[1.2rem] flex items-center justify-center border-2 border-border">
                 <img src={featureAi} alt="IA" className="w-12 h-12" />
               </div>
-              <h4 className="text-2xl font-bold">Simulados Inteligentes</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-2xl font-black uppercase">Simulados Inteligentes</h4>
+              <p className="text-muted-foreground font-semibold">
                 IA gera questões inéditas personalizadas para seu nível e objetivo. Aprenda com feedback instantâneo e evolutivo.
               </p>
               <ul className="space-y-2 pt-2">
@@ -133,12 +197,12 @@ const Index = () => {
               </ul>
             </Card>
 
-            <Card className="p-8 space-y-4 hover:shadow-medium transition-all hover:-translate-y-1 bg-gradient-card border-border/50">
-              <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center">
+            <Card className="p-8 space-y-4 bg-white border-4 border-border shadow-medium rounded-[2rem]">
+              <div className="w-16 h-16 bg-secondary rounded-[1.2rem] flex items-center justify-center border-2 border-border">
                 <img src={featureSocial} alt="Social" className="w-12 h-12" />
               </div>
-              <h4 className="text-2xl font-bold">Comunidade Ativa</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-2xl font-black uppercase">Comunidade Ativa</h4>
+              <p className="text-muted-foreground font-semibold">
                 Conecte-se com outros estudantes, compartilhe conquistas e motive-se mutuamente na jornada.
               </p>
               <ul className="space-y-2 pt-2">
@@ -153,12 +217,12 @@ const Index = () => {
               </ul>
             </Card>
 
-            <Card className="p-8 space-y-4 hover:shadow-medium transition-all hover:-translate-y-1 bg-gradient-card border-border/50">
-              <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center">
+            <Card className="p-8 space-y-4 bg-white border-4 border-border shadow-medium rounded-[2rem]">
+              <div className="w-16 h-16 bg-accent rounded-[1.2rem] flex items-center justify-center border-2 border-border">
                 <img src={featureProgress} alt="Progresso" className="w-12 h-12" />
               </div>
-              <h4 className="text-2xl font-bold">Acompanhe sua Evolução</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-2xl font-black uppercase">Acompanhe sua Evolução</h4>
+              <p className="text-muted-foreground font-semibold">
                 Dashboards completos com métricas, gráficos e insights para otimizar seu desempenho.
               </p>
               <ul className="space-y-2 pt-2">
@@ -180,39 +244,39 @@ const Index = () => {
       <section id="how-it-works" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center space-y-4 mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold">Como funciona</h3>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <h3 className="text-3xl md:text-5xl font-black uppercase">Como funciona</h3>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-semibold">
               Em 3 passos simples, comece sua preparação inteligente
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto shadow-medium">
+            <div className="text-center space-y-4 rounded-[2rem] border-4 border-border bg-white p-8 shadow-medium">
+              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-2xl font-black text-white mx-auto border-2 border-border">
                 1
               </div>
-              <h4 className="text-xl font-bold">Crie seu Perfil</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-xl font-black uppercase">Crie seu Perfil</h4>
+              <p className="text-muted-foreground font-semibold">
                 Cadastre-se e defina seu objetivo, cargo desejado e áreas de estudo
               </p>
             </div>
 
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-gradient-success rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto shadow-medium">
+            <div className="text-center space-y-4 rounded-[2rem] border-4 border-border bg-white p-8 shadow-medium">
+              <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-2xl font-black text-white mx-auto border-2 border-border">
                 2
               </div>
-              <h4 className="text-xl font-bold">Faça Simulados</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-xl font-black uppercase">Faça Simulados</h4>
+              <p className="text-muted-foreground font-semibold">
                 IA gera questões personalizadas e você recebe feedback instantâneo
               </p>
             </div>
 
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-2xl font-bold text-white mx-auto shadow-medium">
+            <div className="text-center space-y-4 rounded-[2rem] border-4 border-border bg-white p-8 shadow-medium">
+              <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center text-2xl font-black text-white mx-auto border-2 border-border">
                 3
               </div>
-              <h4 className="text-xl font-bold">Evolua e Conecte-se</h4>
-              <p className="text-muted-foreground">
+              <h4 className="text-xl font-black uppercase">Evolua e Conecte-se</h4>
+              <p className="text-muted-foreground font-semibold">
                 Acompanhe seu progresso e interaja com a comunidade
               </p>
             </div>
@@ -221,23 +285,25 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-hero relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMSIgb3BhY2l0eT0iMC4xIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20"></div>
+      <section className="py-20 relative overflow-hidden">
         <div className="container mx-auto px-4 relative">
-          <div className="max-w-3xl mx-auto text-center space-y-6 text-white">
-            <h3 className="text-3xl md:text-5xl font-bold">
+          <div className="max-w-4xl mx-auto text-center space-y-6 rounded-[2.5rem] border-4 border-border bg-primary px-8 py-14 text-white shadow-strong">
+            <div className="mx-auto inline-flex rounded-full border-2 border-border bg-[#f7cf3d] px-5 py-2 text-sm font-black uppercase tracking-wide text-foreground">
+              Tamo junto nos estudos
+            </div>
+            <h3 className="text-3xl md:text-5xl font-black uppercase leading-tight">
               Pronto para garantir sua aprovação?
             </h3>
-            <p className="text-xl opacity-90">
-              Junte-se a milhares de estudantes que já estão transformando seus resultados com o Gabarita
+            <p className="text-xl font-semibold text-white/90">
+              Junte-se a milhares de estudantes que já estão transformando seus resultados com o Gabarit
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Link to="/auth">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg h-14 px-8 shadow-strong">
+              <Link to="/signup">
+                <Button size="lg" className="bg-[#f7cf3d] text-foreground border-2 border-border hover:bg-[#f7cf3d] text-lg h-14 px-8 shadow-medium hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none rounded-full">
                   Começar Gratuitamente
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 text-lg h-14 px-8">
+              <Button size="lg" variant="outline" className="border-2 border-white text-white bg-transparent hover:bg-white/10 text-lg h-14 px-8 rounded-full">
                 Falar com Especialista
               </Button>
             </div>
@@ -246,45 +312,42 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border py-12">
+      <footer className="bg-background border-t-4 border-border py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Brain className="w-6 h-6 text-primary" />
-                <span className="text-xl font-bold">Gabarita</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
+              <FocaLogo />
+              <p className="text-sm text-muted-foreground font-semibold">
                 Plataforma inteligente de preparação para concursos e ENEM
               </p>
             </div>
             <div>
-              <h5 className="font-semibold mb-4">Produto</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h5 className="font-black uppercase mb-4">Produto</h5>
+              <ul className="space-y-2 text-sm text-muted-foreground font-semibold">
                 <li><a href="#" className="hover:text-foreground transition-colors">Recursos</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Preços</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Segurança</a></li>
               </ul>
             </div>
             <div>
-              <h5 className="font-semibold mb-4">Empresa</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h5 className="font-black uppercase mb-4">Empresa</h5>
+              <ul className="space-y-2 text-sm text-muted-foreground font-semibold">
                 <li><a href="#" className="hover:text-foreground transition-colors">Sobre</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Carreiras</a></li>
               </ul>
             </div>
             <div>
-              <h5 className="font-semibold mb-4">Suporte</h5>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h5 className="font-black uppercase mb-4">Suporte</h5>
+              <ul className="space-y-2 text-sm text-muted-foreground font-semibold">
                 <li><a href="#" className="hover:text-foreground transition-colors">Central de Ajuda</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Contato</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2025 Gabarita. Todos os direitos reservados.
+          <div className="border-t-4 border-border mt-8 pt-8 text-center text-sm text-muted-foreground font-semibold">
+            © 2025 Gabarit. Todos os direitos reservados.
           </div>
         </div>
       </footer>
