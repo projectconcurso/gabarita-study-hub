@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, FileText, Users, MessageCircle, User, LogOut, Sparkles, Menu, X } from "lucide-react";
+import { Home, FileText, Users, MessageCircle, User, LogOut, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { FocaLogo } from "@/components/FocaMascot";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SidebarProfile {
   nome: string | null;
@@ -17,7 +16,6 @@ interface SidebarProfile {
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [profile, setProfile] = useState<SidebarProfile | null>(null);
   const [chatUnreadCount, setChatUnreadCount] = useState(0);
   
@@ -38,10 +36,6 @@ export default function Sidebar() {
       toast.success("Logout realizado!");
       navigate("/");
     }
-  };
-
-  const handleNavigate = () => {
-    setMobileOpen(false);
   };
 
   useEffect(() => {
@@ -106,70 +100,39 @@ export default function Sidebar() {
     };
   }, []);
 
-  const fullName = [profile?.nome, profile?.sobrenome].filter(Boolean).join(" ");
-  const initials = `${profile?.nome?.[0] ?? ""}${profile?.sobrenome?.[0] ?? ""}` || "U";
-
   return (
     <>
       <div className="sticky top-0 z-30 flex items-center justify-between border-b-4 border-border bg-[#f7cf3d] px-4 py-3 lg:hidden">
-        <Button
-          type="button"
-          variant="ghost"
-          className="h-11 w-11 rounded-full border-2 border-border bg-white shadow-soft"
-          onClick={() => setMobileOpen((current) => !current)}
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
-        <Link to="/dashboard" onClick={handleNavigate} className="min-w-0">
+        <Link to="/dashboard" className="min-w-0">
           <FocaLogo />
         </Link>
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 rounded-full border-2 border-border bg-white px-4 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Sair
+        </Button>
       </div>
 
-      {mobileOpen && (
-        <button
-          type="button"
-          aria-label="Fechar menu"
-          className="fixed inset-0 z-20 bg-black/40 lg:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      <aside className={`fixed inset-y-0 left-0 z-30 flex h-screen w-[85vw] max-w-72 shrink-0 flex-col overflow-hidden border-r-4 border-border bg-sidebar transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:w-72 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:flex`}>
+      <aside className="hidden shrink-0 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r-4 lg:border-border lg:bg-sidebar">
         <div className="hidden border-b-4 border-border bg-[#f7cf3d] p-5 lg:block">
           <Link to="/dashboard">
             <FocaLogo />
           </Link>
         </div>
         
-        <nav className="flex-1 overflow-y-auto p-4 pt-20 lg:pt-4">
+        <nav className="flex-1 overflow-y-auto p-4 pt-4">
           <div className="mx-auto flex w-full max-w-sm flex-col space-y-3">
-            <div className="rounded-[1.5rem] border-2 border-border bg-white p-4 shadow-soft lg:hidden">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-14 w-14 border-2 border-border">
-                  {profile?.foto_url ? (
-                    <AvatarImage src={profile.foto_url} alt={fullName || "Usuário"} className="object-cover" />
-                  ) : null}
-                  <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="text-xs font-black uppercase text-muted-foreground">
-                    Seu perfil
-                  </p>
-                  <p className="truncate text-base font-black uppercase text-foreground">
-                    {fullName || "Usuário"}
-                  </p>
-                </div>
-              </div>
-            </div>
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               const showChatUnreadBadge = item.path === "/dashboard/chat" && chatUnreadCount > 0;
               
               return (
-                <Link key={item.path} to={item.path} onClick={handleNavigate}>
+                <Link key={item.path} to={item.path}>
                   <Button
                     variant={isActive ? "default" : "outline"}
                     className={`w-full justify-between rounded-[1.2rem] border-2 border-border px-4 py-5 text-sm font-black uppercase shadow-soft transition-all lg:py-6 lg:text-base hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? 'bg-primary text-primary-foreground' : 'bg-white text-foreground hover:bg-muted hover:text-foreground'}`}
@@ -203,6 +166,33 @@ export default function Sidebar() {
           </div>
         </div>
       </aside>
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t-4 border-border bg-white px-2 py-2 shadow-strong lg:hidden">
+        <div className="grid grid-cols-6 gap-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            const showChatUnreadBadge = item.path === "/dashboard/chat" && chatUnreadCount > 0;
+
+            return (
+              <Link key={item.path} to={item.path} className="min-w-0">
+                <Button
+                  variant="ghost"
+                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-2 py-2 text-[11px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                  {showChatUnreadBadge && (
+                    <span className="absolute right-1 top-1 inline-flex min-w-5 items-center justify-center rounded-full border-2 border-border bg-accent px-1 text-[10px] font-black text-accent-foreground">
+                      {chatUnreadCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }
