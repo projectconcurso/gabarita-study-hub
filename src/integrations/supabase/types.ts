@@ -81,12 +81,12 @@ export type Database = {
           titulo: string;
           tema: string;
           materia: string;
-          block_config: Json | null;
           total_questoes: number;
           acertos: number;
           status: string;
-          criado_em: string;
-          finalizado_em: string | null;
+          percentual_acerto: number | null;
+          created_at: string;
+          finished_at: string | null;
         };
         Insert: {
           id?: string;
@@ -94,12 +94,12 @@ export type Database = {
           titulo: string;
           tema: string;
           materia: string;
-          block_config?: Json | null;
           total_questoes: number;
           acertos?: number;
           status?: string;
-          criado_em?: string;
-          finalizado_em?: string | null;
+          percentual_acerto?: number | null;
+          created_at?: string;
+          finished_at?: string | null;
         };
         Update: {
           id?: string;
@@ -107,12 +107,12 @@ export type Database = {
           titulo?: string;
           tema?: string;
           materia?: string;
-          block_config?: Json | null;
           total_questoes?: number;
           acertos?: number;
           status?: string;
-          criado_em?: string;
-          finalizado_em?: string | null;
+          percentual_acerto?: number | null;
+          created_at?: string;
+          finished_at?: string | null;
         };
       };
       questoes: {
@@ -193,6 +193,78 @@ export type Database = {
           destinatario_id?: string;
           mensagem?: string;
           lida?: boolean;
+          created_at?: string;
+        };
+      };
+      posts_mural: {
+        Row: {
+          id: string;
+          user_id: string;
+          conteudo: string;
+          tipo: string;
+          simulado_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          conteudo: string;
+          tipo: string;
+          simulado_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          conteudo?: string;
+          tipo?: string;
+          simulado_id?: string | null;
+          created_at?: string;
+        };
+      };
+      reacoes_mural: {
+        Row: {
+          id: string;
+          post_id: string;
+          user_id: string;
+          tipo: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          post_id: string;
+          user_id: string;
+          tipo: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          post_id?: string;
+          user_id?: string;
+          tipo?: string;
+          created_at?: string;
+        };
+      };
+      comentarios_mural: {
+        Row: {
+          id: string;
+          post_id: string;
+          user_id: string;
+          conteudo: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          post_id: string;
+          user_id: string;
+          conteudo: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          post_id?: string;
+          user_id?: string;
+          conteudo?: string;
           created_at?: string;
         };
       };

@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import type { Json } from "@/integrations/supabase/types";
 
 interface Questao {
   id: string;
@@ -25,7 +24,6 @@ interface Simulado {
   titulo: string;
   tema: string;
   materia: string;
-  block_config?: Json | null;
   total_questoes: number;
   status: string;
   acertos: number;
@@ -42,14 +40,14 @@ interface SimuladoBlock {
 interface RawQuestao {
   id: string;
   enunciado: string;
-  alternativas: Json;
+  alternativas: Record<string, unknown> | null;
   resposta_correta: string;
   explicacao: string | null;
   resposta_usuario: string | null;
   ordem: number;
 }
 
-const normalizeAlternativas = (alternativas: Json): Record<string, string> => {
+const normalizeAlternativas = (alternativas: Record<string, unknown> | null): Record<string, string> => {
   if (!alternativas || typeof alternativas !== "object" || Array.isArray(alternativas)) {
     return {};
   }
@@ -72,30 +70,8 @@ const normalizeQuestao = (q: RawQuestao): Questao => ({
 const buildSimuladoBlocks = (
   materias: string,
   temas: string,
-  totalQuestoes: number,
-  blockConfig?: Json | null
+  totalQuestoes: number
 ): SimuladoBlock[] => {
-  if (Array.isArray(blockConfig)) {
-    const normalizedBlocks = blockConfig
-      .map((block, index) => {
-        if (!block || typeof block !== "object" || Array.isArray(block)) {
-          return null;
-        }
-
-        return {
-          id: `block-${index}`,
-          materia: String(block.materia ?? "—"),
-          tema: String(block.tema ?? "—"),
-          quantidade: Number(block.quantidade ?? 0),
-        };
-      })
-      .filter((block): block is SimuladoBlock => Boolean(block));
-
-    if (normalizedBlocks.length > 0) {
-      return normalizedBlocks;
-    }
-  }
-
   const parsedMaterias = materias
     .split("•")
     .map((item) => item.trim())
@@ -425,8 +401,7 @@ export default function Simular() {
   const simuladoBlocks = buildSimuladoBlocks(
     simulado.materia,
     simulado.tema,
-    simulado.total_questoes,
-    simulado.block_config
+    simulado.total_questoes
   );
   const chunkedQuestionIndexes = Array.from(
     { length: Math.ceil(questoes.length / 10) },

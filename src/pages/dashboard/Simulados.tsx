@@ -11,14 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Brain, Plus, CheckCircle, Share2, Trash2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import type { Json } from "@/integrations/supabase/types";
 
 interface Simulado {
   id: string;
   titulo: string;
   tema: string;
   materia: string;
-  block_config?: Json | null;
   status: string;
   total_questoes: number;
   acertos: number;
@@ -85,30 +83,8 @@ const parseSimuladoItems = (value: string) =>
 const buildSimuladoBlocks = (
   materias: string,
   temas: string,
-  totalQuestoes: number,
-  blockConfig?: Json | null
+  totalQuestoes: number
 ) => {
-  if (Array.isArray(blockConfig)) {
-    const normalizedBlocks = blockConfig
-      .map((block, index) => {
-        if (!block || typeof block !== "object" || Array.isArray(block)) {
-          return null;
-        }
-
-        return {
-          id: `block-${index}`,
-          materia: String(block.materia ?? "—"),
-          tema: String(block.tema ?? "—"),
-          quantidade: Number(block.quantidade ?? 0),
-        };
-      })
-      .filter((block): block is { id: string; materia: string; tema: string; quantidade: number } => Boolean(block));
-
-    if (normalizedBlocks.length > 0) {
-      return normalizedBlocks;
-    }
-  }
-
   const parsedMaterias = materias
     .split("•")
     .map((item) => item.trim())
@@ -350,7 +326,7 @@ export default function Simulados() {
 
     const { data, error } = await supabase
       .from("simulados")
-      .select("*")
+      .select("id, titulo, tema, materia, status, total_questoes, acertos, percentual_acerto, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
@@ -457,15 +433,10 @@ export default function Simulados() {
           titulo: formData.titulo,
           tema: validTopicGroups.map((group) => group.tema.trim()).join(" • "),
           materia: validTopicGroups.map((group) => group.materia.trim()).join(" • "),
-          block_config: validTopicGroups.map((group) => ({
-            materia: group.materia.trim(),
-            tema: group.tema.trim(),
-            quantidade: Number.parseInt(group.quantidade, 10),
-          })),
           total_questoes: totalQuestoes,
           status: "em_andamento"
         })
-        .select()
+        .select("id, titulo, tema, materia, status, total_questoes, acertos, percentual_acerto, created_at")
         .single();
 
       if (simuladoError) throw simuladoError;
@@ -729,7 +700,7 @@ export default function Simulados() {
                   <div className="min-w-0 space-y-2">
                     <CardTitle className="text-xl font-black uppercase">{sim.titulo}</CardTitle>
                     <div className="space-y-2 font-semibold text-muted-foreground">
-                      {buildSimuladoBlocks(sim.materia, sim.tema, sim.total_questoes, sim.block_config).map((block, index) => (
+                      {buildSimuladoBlocks(sim.materia, sim.tema, sim.total_questoes).map((block, index) => (
                         <CardDescription
                           key={`${sim.id}-${block.id}`}
                           className="break-words text-sm leading-relaxed"
