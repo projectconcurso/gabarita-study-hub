@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import { QuestionContent } from "@/components/QuestionContent";
 
 interface Questao {
   id: string;
@@ -17,6 +18,7 @@ interface Questao {
   explicacao: string | null;
   resposta_usuario: string | null;
   ordem: number;
+  image_url: string | null;
 }
 
 interface Simulado {
@@ -65,6 +67,7 @@ const normalizeQuestao = (q: RawQuestao): Questao => ({
   explicacao: q.explicacao,
   resposta_usuario: q.resposta_usuario,
   ordem: q.ordem,
+  image_url: null,
 });
 
 const buildSimuladoBlocks = (
@@ -94,13 +97,14 @@ const buildSimuladoBlocks = (
 export default function Simular() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [simulado, setSimulado] = useState<Simulado | null>(null);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [respostas, setRespostas] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
-  const [finalizando, setFinalizando] = useState(false);
   const [resultado, setResultado] = useState<{ acertos: number; percentual: number } | null>(null);
+  const [finalizando, setFinalizando] = useState(false);
+  const [blocks, setBlocks] = useState<SimuladoBlock[]>([]);
 
   useEffect(() => {
     loadSimulado();
@@ -330,9 +334,11 @@ export default function Simular() {
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500 mt-0.5" />
                         )}
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="font-black uppercase">Questão {index + 1}</p>
-                          <p className="text-sm font-semibold text-muted-foreground">{q.enunciado}</p>
+                          <div className="text-sm font-semibold text-muted-foreground">
+                            <QuestionContent content={q.enunciado} imageUrl={q.image_url} />
+                          </div>
                         </div>
                       </div>
                       <div className="space-y-1 pl-0 text-sm md:pl-8">
@@ -368,12 +374,12 @@ export default function Simular() {
 
                     const { error } = await supabase
                       .from("posts_mural")
-                      .insert({
+                      .insert([{
                         user_id: user.id,
                         conteudo: `Concluí o simulado "${simulado.titulo}" em ${simulado.materia} com ${resultado.percentual}% de acerto (${resultado.acertos}/${questoes.length})!`,
                         tipo: "resultado",
                         simulado_id: simulado.id,
-                      });
+                      }]);
 
                     if (error) {
                       toast.error("Erro ao compartilhar no mural");
@@ -442,9 +448,14 @@ export default function Simular() {
 
       <Card className="rounded-[2rem] border-4 border-border bg-white shadow-medium">
         <CardHeader>
-          <CardTitle className="text-lg font-black leading-relaxed md:text-xl">
-            {currentIndex + 1}. {questaoAtual.enunciado}
-          </CardTitle>
+          <div className="space-y-3">
+            <p className="text-sm font-black uppercase text-muted-foreground">
+              Questão {currentIndex + 1}
+            </p>
+            <div className="text-base font-semibold leading-relaxed md:text-lg">
+              <QuestionContent content={questaoAtual.enunciado} imageUrl={questaoAtual.image_url} />
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <RadioGroup

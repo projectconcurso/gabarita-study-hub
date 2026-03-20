@@ -20,6 +20,7 @@ import Simular from "./pages/dashboard/Simular.tsx";
 import Perfil from "./pages/dashboard/Perfil";
 import PerfilAmigo from "./pages/dashboard/PerfilAmigo";
 import Billing from "./pages/dashboard/Billing";
+import LojaGabaritos from "./pages/dashboard/LojaGabaritos";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="chat" element={<Chat />} />
             <Route path="perfil" element={<Perfil />} />
             <Route path="billing" element={<Billing />} />
+            <Route path="loja" element={<LojaGabaritos />} />
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

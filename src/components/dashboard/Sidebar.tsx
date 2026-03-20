@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { FocaLogo } from "@/components/FocaMascot";
+import { GabaritosBalance } from "@/components/GabaritosBalance";
 
 interface SidebarProfile {
   nome: string | null;
@@ -106,15 +107,23 @@ export default function Sidebar() {
         <Link to="/dashboard" className="min-w-0">
           <FocaLogo />
         </Link>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 rounded-full border-2 border-border bg-white px-4 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sair
-        </Button>
+        <div className="flex items-center gap-2">
+          <div 
+            className="cursor-pointer"
+            onClick={() => navigate("/dashboard/loja")}
+          >
+            <GabaritosBalance showLabel={false} size="sm" />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-11 rounded-full border-2 border-border bg-white px-4 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair
+          </Button>
+        </div>
       </div>
 
       <aside className="hidden shrink-0 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:overflow-hidden lg:border-r-4 lg:border-border lg:bg-sidebar">
@@ -153,8 +162,14 @@ export default function Sidebar() {
           </div>
         </nav>
         
-        <div className="border-t-4 border-border bg-white p-4">
+        <div className="border-t-4 border-border bg-white p-4 space-y-3">
           <div className="mx-auto w-full max-w-sm">
+            <div 
+              className="mb-3 p-3 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 cursor-pointer transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-soft"
+              onClick={() => navigate("/dashboard/loja")}
+            >
+              <GabaritosBalance showLabel={true} size="md" />
+            </div>
             <Button
               variant="ghost"
               className="w-full justify-start rounded-[1.2rem] border-2 border-border bg-white px-4 py-5 text-sm font-black uppercase text-destructive shadow-soft lg:py-6 lg:text-base hover:bg-white hover:text-destructive hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
@@ -167,8 +182,8 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t-4 border-border bg-white px-2 py-2 shadow-strong lg:hidden">
-        <div className="grid grid-cols-6 gap-2">
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t-4 border-border bg-white shadow-strong lg:hidden">
+        <div className="grid grid-cols-6 gap-2 px-2 py-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -178,10 +193,10 @@ export default function Sidebar() {
               <Link key={item.path} to={item.path} className="min-w-0">
                 <Button
                   variant="ghost"
-                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-2 py-2 text-[11px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
+                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-1 py-2 text-[10px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{item.label}</span>
+                  <span className="w-full truncate text-center">{item.label}</span>
                   {showChatUnreadBadge && (
                     <span className="absolute right-1 top-1 inline-flex min-w-5 items-center justify-center rounded-full border-2 border-border bg-accent px-1 text-[10px] font-black text-accent-foreground">
                       {chatUnreadCount}

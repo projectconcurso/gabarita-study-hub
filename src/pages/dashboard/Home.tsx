@@ -123,7 +123,7 @@ export default function DashboardHome() {
     }
 
     setProfile(profileValue);
-    setRecentSimulados(simulados.slice(0, 4));
+    setRecentSimulados(simulados.slice(0, 3));
     setFriends(resolvedFriends);
     setStats({
       totalSimuladosPendentes: pendentes.length,
@@ -334,8 +334,7 @@ export default function DashboardHome() {
           </CardContent>
         </Card>
 
-        <div className="flex h-full flex-col gap-6">
-          <Card className="flex min-h-0 flex-1 flex-col rounded-[2rem] border-4 border-border bg-white shadow-medium">
+        <Card className="flex min-h-0 flex-1 flex-col rounded-[2rem] border-4 border-border bg-white shadow-medium">
             <CardHeader className="space-y-3">
               <CardTitle className="flex items-center justify-between gap-3 text-2xl font-black uppercase">
                 <span>Amigos</span>
@@ -398,36 +397,6 @@ export default function DashboardHome() {
               </div>
             </CardContent>
           </Card>
-
-          <Card className="flex flex-col rounded-[2rem] border-4 border-border bg-white shadow-medium">
-            <CardHeader className="space-y-3">
-              <CardTitle className="text-2xl font-black uppercase">Ações rápidas</CardTitle>
-              <CardDescription className="font-semibold text-muted-foreground">
-                Acessos úteis sem transformar a home em uma página só de botões.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Link to="/dashboard/perfil" className="block">
-                <Button className="w-full justify-between rounded-[1.2rem] border-2 border-border bg-white px-4 py-6 font-black uppercase text-foreground shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" variant="outline">
-                  Ajustar meu perfil
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/dashboard/chat" className="block">
-                <Button className="w-full justify-between rounded-[1.2rem] border-2 border-border bg-white px-4 py-6 font-black uppercase text-foreground shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" variant="outline">
-                  Abrir chat
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/dashboard/mural" className="block">
-                <Button className="w-full justify-between rounded-[1.2rem] border-2 border-border bg-white px-4 py-6 font-black uppercase text-foreground shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" variant="outline">
-                  Ir para o mural
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );

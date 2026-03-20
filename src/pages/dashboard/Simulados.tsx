@@ -9,8 +9,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Brain, Plus, CheckCircle, Share2, Trash2, XCircle } from "lucide-react";
+import { Brain, Plus, CheckCircle, Share2, Trash2, XCircle, Coins } from "lucide-react";
 import { toast } from "sonner";
+import { calculateSimuladoCost } from "@/lib/gabaritos";
+import { InsufficientBalanceDialog } from "@/components/InsufficientBalanceDialog";
 
 interface Simulado {
   id: string;
@@ -137,6 +139,8 @@ export default function Simulados() {
   const [shareSimulado, setShareSimulado] = useState<Simulado | null>(null);
   const [shareFriendId, setShareFriendId] = useState("");
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [gabaritosBalance, setGabaritosBalance] = useState(0);
+  const [insufficientBalanceOpen, setInsufficientBalanceOpen] = useState(false);
   const [formData, setFormData] = useState({
     titulo: "",
     escolaridade: "",
@@ -152,11 +156,35 @@ export default function Simulados() {
 
   useEffect(() => {
     loadSimulados();
+    loadGabaritosBalance();
   }, []);
 
   useEffect(() => {
     void loadFriends();
   }, []);
+
+  const loadGabaritosBalance = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('user_gabaritos')
+        .select('gabaritos')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error || !data) {
+        setGabaritosBalance(0);
+        return;
+      }
+
+      setGabaritosBalance(data.gabaritos ?? 0);
+    } catch (error) {
+      console.error('Erro ao carregar saldo:', error);
+      setGabaritosBalance(0);
+    }
+  };
 
   const buildShareMessage = (sim: Simulado, mode: "simulado" | "resultado") =>
     mode === "resultado"
@@ -382,8 +410,15 @@ export default function Simulados() {
       return;
     }
 
-    if (totalQuestoes < 5 || totalQuestoes > 50) {
-      toast.error("O total de questões deve ficar entre 5 e 50");
+    if (totalQuestoes < 5 || totalQuestoes > 80) {
+      toast.error("O total de questões deve ficar entre 5 e 80");
+      return;
+    }
+
+    // Verificar saldo de Gabaritos
+    const custoSimulado = calculateSimuladoCost(totalQuestoes);
+    if (gabaritosBalance < custoSimulado) {
+      setInsufficientBalanceOpen(true);
       return;
     }
 
@@ -393,37 +428,9 @@ export default function Simulados() {
     if (!user) return;
 
     try {
-      setGenerationStage("Validando seu acesso...");
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("subscription_status, trial_ends_at")
-        .eq("id", user.id)
-        .single();
-
-      if (profileError) throw profileError;
-      if (!profile) {
-        toast.error("Perfil não encontrado");
-        return;
-      }
-
-      // Check if trial has expired or payment failed
-      if (profile.subscription_status === "trial" && profile.trial_ends_at) {
-        const trialEndDate = new Date(profile.trial_ends_at);
-        if (new Date() > trialEndDate) {
-          toast.error("Seu período de teste expirou. Atualize seu plano para continuar.");
-          navigate("/dashboard/perfil");
-          return;
-        }
-      } else if (profile.subscription_status === "past_due") {
-        toast.error("Seu pagamento foi recusado. Atualize seu método de pagamento para continuar.");
-        navigate("/dashboard/perfil");
-        return;
-      } else if (profile.subscription_status === "cancelled") {
-        toast.error("Sua assinatura foi cancelada. Assine novamente para continuar.");
-        navigate("/dashboard/perfil");
-        return;
-      }
-
+      // A verificação de saldo já foi feita antes, então podemos criar o simulado diretamente
+      // O sistema agora funciona apenas com Gabaritos, não mais com status de assinatura
+      
       // Criar o simulado
       setGenerationStage("Montando a estrutura do simulado...");
       const { data: simulado, error: simuladoError } = await supabase
@@ -662,16 +669,39 @@ export default function Simulados() {
                     </div>
                   ))}
                 </div>
-                <div className="rounded-[1rem] border-2 border-border bg-[#f7cf3d] px-4 py-3 text-sm font-black uppercase text-foreground">
-                  Total de questões: {totalQuestoes}
+                <div className="space-y-2">
+                  <div className="rounded-[1rem] border-2 border-border bg-[#f7cf3d] px-4 py-3 text-sm font-black uppercase text-foreground">
+                    Total de questões: {totalQuestoes}
+                  </div>
+                  {totalQuestoes >= 5 && totalQuestoes <= 80 && (
+                    <div className="rounded-[1rem] border-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-3 flex items-center justify-between">
+                      <span className="text-sm font-bold text-gray-700">Custo:</span>
+                      <div className="flex items-center gap-2">
+                        <Coins className="h-5 w-5 text-yellow-600" />
+                        <span className="text-lg font-black text-gray-900">{calculateSimuladoCost(totalQuestoes)}</span>
+                        <span className="text-sm font-bold text-gray-600">Gabaritos</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <Button 
                 className="w-full rounded-full border-2 border-border bg-accent text-accent-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" 
                 onClick={createSimulado}
-                disabled={loading}
+                disabled={loading || totalQuestoes < 5 || totalQuestoes > 80}
               >
-                {loading ? "Gerando..." : "Criar Simulado"}
+                {loading ? "Gerando..." : (
+                  <span className="flex items-center justify-center gap-2">
+                    <span>Criar Simulado</span>
+                    {totalQuestoes >= 5 && totalQuestoes <= 80 && (
+                      <>
+                        <span>•</span>
+                        <Coins className="h-4 w-4" />
+                        <span>{calculateSimuladoCost(totalQuestoes)}</span>
+                      </>
+                    )}
+                  </span>
+                )}
               </Button>
             </div>
           </DialogContent>
@@ -862,6 +892,14 @@ export default function Simulados() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <InsufficientBalanceDialog
+        open={insufficientBalanceOpen}
+        onOpenChange={setInsufficientBalanceOpen}
+        required={totalQuestoes >= 5 && totalQuestoes <= 80 ? calculateSimuladoCost(totalQuestoes) : 0}
+        available={gabaritosBalance}
+        questoesCount={totalQuestoes}
+      />
     </div>
   );
 }

@@ -55,10 +55,6 @@ serve(async (req: Request) => {
     console.log(`Processing Stripe event: ${event.type}`);
 
     switch (event.type) {
-      case "checkout.session.completed":
-        await handleCheckoutSessionCompleted(event.data.object);
-        break;
-
       case "customer.subscription.created":
         await handleSubscriptionCreated(event.data.object);
         break;
@@ -81,6 +77,23 @@ serve(async (req: Request) => {
 
       case "customer.subscription.trial_will_end":
         await handleTrialWillEnd(event.data.object);
+        break;
+
+      case "checkout.session.completed":
+        console.log("Checkout session completed:", {
+          sessionId: event.data.object.id,
+          metadata: event.data.object.metadata,
+          payment_status: event.data.object.payment_status
+        });
+        
+        // Verificar se é compra de pacote avulso
+        if (event.data.object.metadata?.type === "gabaritos_purchase") {
+          console.log("Processing gabaritos purchase...");
+          await handleGabaritosPurchase(event.data.object);
+        } else {
+          console.log("Processing regular checkout...");
+          await handleCheckoutSessionCompleted(event.data.object);
+        }
         break;
 
       default:
@@ -118,6 +131,19 @@ async function handleCheckoutSessionCompleted(session: any) {
 }
 
 async function handleSubscriptionCreated(subscription: any) {
+  // Buscar o user_id pelo stripe_customer_id
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("stripe_customer_id", subscription.customer)
+    .single();
+
+  if (profileError || !profile) {
+    console.error("Error finding profile for subscription created:", profileError);
+    return;
+  }
+
+  // Atualizar status da assinatura
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -130,6 +156,20 @@ async function handleSubscriptionCreated(subscription: any) {
 
   if (error) {
     console.error("Error updating subscription created:", error);
+    return;
+  }
+
+  // Se está em trial, conceder 50 Gabaritos
+  if (subscription.status === "trialing") {
+    const { error: trialError } = await supabase.rpc("grant_trial_gabaritos", {
+      p_user_id: profile.id,
+    });
+
+    if (trialError) {
+      console.error("Error granting trial gabaritos:", trialError);
+    } else {
+      console.log(`Granted 50 trial Gabaritos to user ${profile.id}`);
+    }
   }
 }
 
@@ -162,6 +202,19 @@ async function handleSubscriptionDeleted(subscription: any) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: any) {
+  // Buscar o user_id pelo stripe_customer_id
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("stripe_customer_id", invoice.customer)
+    .single();
+
+  if (profileError || !profile) {
+    console.error("Error finding profile for invoice payment:", profileError);
+    return;
+  }
+
+  // Atualizar status para active
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -171,6 +224,19 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
 
   if (error) {
     console.error("Error updating invoice payment succeeded:", error);
+    return;
+  }
+
+  // Resetar Gabaritos para 500 (renovação mensal)
+  // Isso acontece quando o pagamento é bem-sucedido (renovação da assinatura)
+  const { error: resetError } = await supabase.rpc("reset_premium_gabaritos", {
+    p_user_id: profile.id,
+  });
+
+  if (resetError) {
+    console.error("Error resetting premium gabaritos:", resetError);
+  } else {
+    console.log(`Reset Gabaritos to 500 for Premium user ${profile.id}`);
   }
 }
 
@@ -191,4 +257,55 @@ async function handleTrialWillEnd(subscription: any) {
   // This event is sent 3 days before trial ends
   // You can use this to send a reminder email to the customer
   console.log(`Trial will end for subscription ${subscription.id}`);
+}
+
+async function handleGabaritosPurchase(session: any) {
+  try {
+    console.log("handleGabaritosPurchase called with session:", session.id);
+    
+    const userId = session.metadata?.user_id;
+    const gabaritosAmount = parseInt(session.metadata?.gabaritos_amount || "0");
+    const packageId = session.metadata?.package_id;
+
+    console.log("Metadata extracted:", { userId, gabaritosAmount, packageId });
+
+    if (!userId || !gabaritosAmount) {
+      console.error("Missing metadata in checkout session:", session.id, { userId, gabaritosAmount });
+      return;
+    }
+
+    console.log("Fetching package info...");
+    // Buscar informações do pacote
+    const { data: pkg, error: pkgError } = await supabase
+      .from("gabaritos_packages")
+      .select("name")
+      .eq("id", packageId)
+      .single();
+
+    if (pkgError) {
+      console.error("Error finding package:", pkgError);
+      return;
+    }
+
+    console.log("Package found:", pkg);
+    console.log("Calling add_gabaritos RPC...");
+
+    // Adicionar Gabaritos ao usuário
+    const { data: rpcData, error: addError } = await supabase.rpc("add_gabaritos", {
+      p_user_id: userId,
+      p_amount: gabaritosAmount,
+      p_description: `Compra: ${pkg?.name || "Pacote de Gabaritos"}`,
+    });
+
+    if (addError) {
+      console.error("Error adding gabaritos:", addError);
+      console.error("RPC error details:", JSON.stringify(addError));
+    } else {
+      console.log(`Successfully added ${gabaritosAmount} Gabaritos to user ${userId}`);
+      console.log("RPC response:", rpcData);
+    }
+  } catch (error) {
+    console.error("Error handling gabaritos purchase:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+  }
 }
