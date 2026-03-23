@@ -33,16 +33,29 @@ export function PropellerBanner({
     }
     
     try {
-      // Criar script do PropellerAds
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.async = true;
-      script.setAttribute('data-cfasync', 'false');
-      script.src = `//5gvci.com/${zoneId}/invoke.js`;
+      // Configurar atOptions ANTES de carregar o script
+      const atOptions = {
+        'key': zoneId,
+        'format': 'iframe',
+        'height': height,
+        'width': width,
+        'params': {}
+      };
       
-      // Adicionar ao container
+      // Criar elemento de configuração
+      const configScript = document.createElement('script');
+      configScript.type = 'text/javascript';
+      configScript.text = `atOptions = ${JSON.stringify(atOptions)};`;
+      
+      // Criar script do PropellerAds
+      const invokeScript = document.createElement('script');
+      invokeScript.type = 'text/javascript';
+      invokeScript.src = `//5gvci.com/${zoneId}/invoke.js`;
+      
+      // Adicionar ao container na ordem correta
       if (containerRef.current) {
-        containerRef.current.appendChild(script);
+        containerRef.current.appendChild(configScript);
+        containerRef.current.appendChild(invokeScript);
       }
     } catch (error) {
       console.error('Erro ao carregar PropellerAds:', error);
@@ -54,7 +67,7 @@ export function PropellerBanner({
         containerRef.current.innerHTML = '';
       }
     };
-  }, [zoneId, loading, isPremium]);
+  }, [zoneId, width, height, loading, isPremium]);
   
   // Não mostrar ads enquanto carrega ou se for premium
   if (loading || isPremium) return null;
