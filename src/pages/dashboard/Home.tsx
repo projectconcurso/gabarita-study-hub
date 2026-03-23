@@ -232,7 +232,7 @@ export default function DashboardHome() {
 
             {/* Banner PropellerAds para usuários não-premium */}
             <PropellerBanner 
-              zoneId="10768455" 
+              zoneId="10768522" 
               width={728} 
               height={90}
               className="mx-auto"

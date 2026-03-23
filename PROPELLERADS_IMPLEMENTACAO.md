@@ -2,8 +2,13 @@
 
 ## ✅ Status: Implementado e Funcionando
 
-**Zone ID:** `10768455`  
 **Domínio:** `5gvci.com`
+
+### **Zones Configuradas:**
+- **10768523** - Push Notifications
+- **10768522** - Vignette Banner
+- **10768521** - In-Page Push
+- **10768520** - OnClick (Popunder)
 
 ---
 
@@ -15,7 +20,7 @@
 ```javascript
 self.options = {
     "domain": "5gvci.com",
-    "zoneId": 10768455
+    "zoneId": 10768523
 }
 self.lary = ""
 importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
@@ -30,7 +35,7 @@ importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
   (function(d,z,s){
     s.src='https://'+d+'/400/'+z;
     try{(document.body||document.documentElement).appendChild(s)}catch(e){}
-  })('5gvci.com', 10768455, document.createElement('script'))
+  })('5gvci.com', 10768523, document.createElement('script'))
 </script>
 ```
 
@@ -80,17 +85,14 @@ export default function MinhaPage() {
 ### **Tamanhos Comuns de Banner:**
 
 ```tsx
-{/* Banner Horizontal (Leaderboard) */}
-<PropellerBanner zoneId="10768455" width={728} height={90} />
+{/* Vignette Banner (Zone 10768522) - Horizontal */}
+<PropellerBanner zoneId="10768522" width={728} height={90} />
 
-{/* Retângulo Médio */}
-<PropellerBanner zoneId="10768455" width={300} height={250} />
+{/* In-Page Push (Zone 10768521) - Retângulo */}
+<PropellerBanner zoneId="10768521" width={300} height={250} />
 
-{/* Banner Grande */}
-<PropellerBanner zoneId="10768455" width={970} height={90} />
-
-{/* Skyscraper */}
-<PropellerBanner zoneId="10768455" width={160} height={600} />
+{/* OnClick/Popunder (Zone 10768520) - Não recomendado */}
+<PropellerBanner zoneId="10768520" width={300} height={250} />
 ```
 
 ---
@@ -106,7 +108,7 @@ export default function MinhaPage() {
 
 ```tsx
 <PropellerBanner 
-  zoneId="10768455" 
+  zoneId="10768522" 
   width={728} 
   height={90}
   className="mx-auto"
