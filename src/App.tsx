@@ -21,6 +21,8 @@ import Perfil from "./pages/dashboard/Perfil";
 import PerfilAmigo from "./pages/dashboard/PerfilAmigo";
 import Billing from "./pages/dashboard/Billing";
 import LojaGabaritos from "./pages/dashboard/LojaGabaritos";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +53,8 @@ const App = () => (
             <Route path="billing" element={<Billing />} />
             <Route path="loja" element={<LojaGabaritos />} />
           </Route>
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

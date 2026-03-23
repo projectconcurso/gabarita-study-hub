@@ -17,10 +17,39 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6935980559364656"
+     crossorigin="anonymous"></script>
+    
+    <!-- AppLixir Rewarded Video Ads SDK v6 -->
+    <script type="text/javascript" src="https://cdn.applixir.com/applixir.app.v6.0.1.js"></script>
+    
+    <style>
+      /* Garantir que o player do AppLixir seja clicável e tenha z-index adequado */
+      #applixir-player-container {
+        z-index: 99999 !important;
+      }
+      
+      #applixir-player-container * {
+        pointer-events: auto !important;
+      }
+      
+      /* Garantir que botões e controles sejam clicáveis */
+      #applixir-player-container button,
+      #applixir-player-container a,
+      #applixir-player-container [role="button"],
+      #applixir-player-container video {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+      }
+    </style>
   </head>
 
   <body>
     <div id="root"></div>
+    <!-- AppLixir Player Injection Point -->
+    <div id="applixir-player-container"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
