@@ -16,7 +16,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { PropellerBanner } from "@/components/ads/PropellerBanner";
 
 interface DashboardProfile {
   nome: string | null;
@@ -229,14 +228,6 @@ export default function DashboardHome() {
                 </Button>
               </Link>
             </div>
-
-            {/* Banner PropellerAds para usuários não-premium */}
-            <PropellerBanner 
-              zoneId="10768522" 
-              width={728} 
-              height={90}
-              className="mx-auto"
-            />
           </CardContent>
         </Card>
 
