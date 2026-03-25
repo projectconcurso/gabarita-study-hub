@@ -542,11 +542,10 @@ export default function Simular() {
         )}
       </div>
 
-      {/* Anúncio a cada 5 questões respondidas */}
+      {/* Pausa a cada 5 questões respondidas */}
       <MontagInterstitial 
         show={showAd} 
         onClose={closeAd}
-        zoneId="10781786"
       />
     </div>
   );
