@@ -183,7 +183,7 @@ export default function Sidebar() {
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t-4 border-border bg-white shadow-strong lg:hidden">
-        <div className="grid grid-cols-6 gap-2 px-2 py-2">
+        <div className="grid grid-cols-6 gap-1 px-1 py-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -193,10 +193,10 @@ export default function Sidebar() {
               <Link key={item.path} to={item.path} className="min-w-0">
                 <Button
                   variant="ghost"
-                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-1 py-2 text-[10px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
+                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-0.5 py-2 text-[9px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  <span className="w-full truncate text-center">{item.label}</span>
+                  <span className="w-full text-center leading-none">{item.label}</span>
                   {showChatUnreadBadge && (
                     <span className="absolute right-1 top-1 inline-flex min-w-5 items-center justify-center rounded-full border-2 border-border bg-accent px-1 text-[10px] font-black text-accent-foreground">
                       {chatUnreadCount}

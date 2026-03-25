@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Coins, Check, Sparkles, Crown } from "lucide-react";
+import { Coins, Check, Sparkles, Crown, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { GabaritosBalance } from "@/components/GabaritosBalance";
@@ -97,46 +97,72 @@ export default function LojaGabaritos() {
   return (
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-black text-foreground mb-2">
-              Loja de Gabaritos
-            </h1>
-            <p className="text-muted-foreground">
-              Adquira Gabaritos para gerar seus simulados personalizados
-            </p>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-black uppercase text-foreground mb-3 sm:text-5xl md:text-6xl">
+          Loja de
+          <span className="block text-primary">Gabaritos</span>
+        </h1>
+        <p className="text-lg font-semibold text-muted-foreground mb-6">
+          Adquira Gabaritos e crie simulados ilimitados!
+        </p>
+        <div className="flex justify-center">
+          <div className="rounded-[1.5rem] border-4 border-border bg-gradient-to-br from-yellow-100 to-orange-100 p-6 shadow-strong">
+            <div className="text-center">
+              <p className="text-sm font-black uppercase text-muted-foreground mb-2">Seu Saldo Atual</p>
+              <GabaritosBalance size="lg" />
+              <p className="text-xs font-semibold text-muted-foreground mt-2">
+                Use seus Gabaritos para criar simulados personalizados!
+              </p>
+            </div>
           </div>
-          <GabaritosBalance size="lg" />
         </div>
       </div>
 
       {/* Como funciona */}
-      <Card className="mb-8 border-2 border-border bg-gradient-to-br from-blue-50 to-purple-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-purple-600" />
-            Como funcionam os Gabaritos?
+      <Card className="mb-8 rounded-[1.5rem] border-4 border-border bg-[#f7cf3d] shadow-strong">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center justify-center gap-2 text-xl font-black uppercase">
+            <Sparkles className="h-5 w-5" />
+            Como Funcionam os Gabaritos?
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-bold mb-2 text-sm">Custo por Simulado:</h3>
-              <ul className="space-y-1 text-sm text-gray-700">
-                <li>• <strong>5 a 20 questões:</strong> 5 Gabaritos</li>
-                <li>• <strong>21 a 40 questões:</strong> 10 Gabaritos</li>
-                <li>• <strong>41 a 60 questões:</strong> 15 Gabaritos</li>
-                <li>• <strong>61 a 80 questões:</strong> 20 Gabaritos</li>
-              </ul>
+            <div className="rounded-[1rem] border-2 border-border bg-white p-4">
+              <h3 className="font-black uppercase mb-3 text-sm">Custo por Simulado:</h3>
+              <div className="space-y-2">
+                <div className="rounded-lg border-2 border-border bg-muted p-2">
+                  <p className="font-bold text-xs">Cada questão = <span className="text-primary text-sm">2 Gabaritos</span></p>
+                </div>
+                <ul className="space-y-1 text-xs font-semibold">
+                  <li className="flex items-center justify-between p-1 rounded bg-green-50 border border-green-200">
+                    <span>5 questões</span>
+                    <span className="text-green-700 font-black">10 Gabaritos</span>
+                  </li>
+                  <li className="flex items-center justify-between p-1 rounded bg-blue-50 border border-blue-200">
+                    <span>10 questões</span>
+                    <span className="text-blue-700 font-black">20 Gabaritos</span>
+                  </li>
+                  <li className="flex items-center justify-between p-1 rounded bg-purple-50 border border-purple-200">
+                    <span>15 questões</span>
+                    <span className="text-purple-700 font-black">30 Gabaritos</span>
+                  </li>
+                  <li className="flex items-center justify-between p-1 rounded bg-orange-50 border border-orange-200">
+                    <span>20 questões</span>
+                    <span className="text-orange-700 font-black">40 Gabaritos</span>
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold mb-2 text-sm">Benefícios:</h3>
-              <ul className="space-y-1 text-sm text-gray-700">
-                {benefits.slice(0, 5).map((benefit, index) => (
+            <div className="rounded-[1rem] border-2 border-border bg-white p-4">
+              <h3 className="font-black uppercase mb-3 text-sm">Benefícios:</h3>
+              <ul className="space-y-2">
+                {benefits.map((benefit, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <Check className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                    <span>{benefit}</span>
+                    <div className="rounded-full border-2 border-border bg-green-100 p-0.5 flex-shrink-0">
+                      <Check className="h-3 w-3 text-green-700" />
+                    </div>
+                    <span className="font-semibold text-xs">{benefit}</span>
                   </li>
                 ))}
               </ul>
@@ -145,58 +171,11 @@ export default function LojaGabaritos() {
         </CardContent>
       </Card>
 
-      {/* Plano Premium */}
-      <Card className="mb-8 border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 px-4 py-1 text-xs font-bold rounded-bl-lg">
-          MELHOR VALOR
-        </div>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
-            <Crown className="h-6 w-6 text-yellow-600" />
-            Plano Premium
-          </CardTitle>
-          <CardDescription>
-            500 Gabaritos mensais + Benefícios exclusivos
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-end gap-2 mb-4">
-            <span className="text-4xl font-black text-gray-900">R$ 29,90</span>
-            <span className="text-gray-600 mb-1">/mês</span>
-          </div>
-          <ul className="space-y-2 mb-6">
-            <li className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-green-600" />
-              <span><strong>500 Gabaritos</strong> todo mês (não cumulativos)</span>
-            </li>
-            <li className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-green-600" />
-              <span>Acesso a recursos exclusivos</span>
-            </li>
-            <li className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-green-600" />
-              <span>Suporte prioritário</span>
-            </li>
-            <li className="flex items-center gap-2 text-sm">
-              <Check className="h-4 w-4 text-green-600" />
-              <span>Sem anúncios</span>
-            </li>
-          </ul>
-          <Button 
-            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold"
-            size="lg"
-          >
-            <Crown className="h-5 w-5 mr-2" />
-            Assinar Premium
-          </Button>
-        </CardContent>
-      </Card>
-
       {/* Pacotes Avulsos */}
       <div className="mb-8">
-        <h2 className="text-2xl font-black mb-4">Pacotes Avulsos</h2>
-        <p className="text-muted-foreground mb-6">
-          Compre Gabaritos avulsos sem compromisso. Seus Gabaritos não expiram!
+        <h2 className="text-3xl font-black uppercase mb-3 text-center">Pacotes Avulsos</h2>
+        <p className="text-lg font-semibold text-muted-foreground mb-6 text-center">
+          Compre Gabaritos sem compromisso. Seus Gabaritos não expiram!
         </p>
 
         {loading ? (
@@ -219,34 +198,43 @@ export default function LojaGabaritos() {
             {packages.map((pkg) => (
               <Card 
                 key={pkg.id}
-                className="border-2 border-border hover:border-primary transition-all hover:shadow-lg"
+                className="rounded-[2rem] border-4 border-border bg-white shadow-strong hover:scale-[1.05] transition-transform"
               >
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Coins className="h-5 w-5 text-yellow-600" />
+                <CardHeader className="text-center">
+                  <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-4 border-yellow-600 bg-gradient-to-br from-yellow-400 to-orange-500 shadow-md">
+                    <Coins className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-2xl font-black uppercase">
                     {pkg.amount} Gabaritos
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="font-bold">
                     {pkg.name}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-4">
-                    <div className="flex items-end gap-2">
-                      <span className="text-3xl font-black text-gray-900">
-                        R$ {pkg.price_brl.toFixed(2).replace('.', ',')}
-                      </span>
-                    </div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      R$ {(pkg.price_brl / pkg.amount).toFixed(2).replace('.', ',')} por Gabarito
+                  <div className="mb-4 text-center">
+                    <div className="rounded-xl border-2 border-border bg-muted p-4">
+                      <div className="flex items-end justify-center gap-2">
+                        <span className="text-3xl font-black text-foreground">
+                          R$ {pkg.price_brl.toFixed(2).replace('.', ',')}
+                        </span>
+                      </div>
+                      <div className="text-xs font-bold text-muted-foreground mt-1">
+                        R$ {(pkg.price_brl / pkg.amount).toFixed(2).replace('.', ',')} por Gabarito
+                      </div>
                     </div>
                   </div>
                   <Button
-                    className="w-full"
+                    className="w-full rounded-full border-2 border-border bg-accent text-accent-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                     onClick={() => handlePurchase(pkg)}
                     disabled={purchasing === pkg.id}
                   >
-                    {purchasing === pkg.id ? 'Processando...' : 'Comprar Agora'}
+                    {purchasing === pkg.id ? 'Processando...' : (
+                      <>
+                        <Zap className="h-4 w-4 mr-2" />
+                        Comprar Agora
+                      </>
+                    )}
                   </Button>
                 </CardContent>
               </Card>
@@ -255,19 +243,83 @@ export default function LojaGabaritos() {
         )}
       </div>
 
-      {/* Trial */}
-      <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-green-600" />
-            Período de Teste (Trial)
+      {/* Plano Premium */}
+      <Card className="mb-8 rounded-[2rem] border-4 border-primary bg-white shadow-strong relative overflow-hidden transform hover:scale-[1.02] transition-transform">
+        <div className="absolute -right-12 top-8 rotate-45 bg-primary px-16 py-2 text-xs font-black uppercase text-primary-foreground shadow-lg">
+          Recomendado
+        </div>
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border-4 border-border bg-primary">
+            <Crown className="h-10 w-10 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-3xl font-black uppercase">
+            Plano Premium
           </CardTitle>
+          <CardDescription className="text-lg font-bold">
+            500 Gabaritos todo mês + Benefícios exclusivos
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-gray-700">
-            Novos usuários recebem <strong>50 Gabaritos grátis</strong> para testar a plataforma por <strong>3 dias</strong>!
-            Crie sua conta e comece a estudar agora mesmo.
-          </p>
+          <div className="mb-6 text-center">
+            <div className="rounded-[1.5rem] border-4 border-border bg-[#f7cf3d] p-6">
+              <div className="flex items-end justify-center gap-2 mb-2">
+                <span className="text-5xl font-black text-foreground">R$ 49,90</span>
+                <span className="text-xl font-bold text-muted-foreground mb-2">/mês</span>
+              </div>
+              <p className="text-sm font-bold text-muted-foreground">7 dias grátis para testar!</p>
+            </div>
+          </div>
+          <div className="rounded-[1.5rem] border-2 border-border bg-green-50 p-4 mb-6">
+            <h4 className="font-black uppercase text-sm mb-3 text-center">Bônus de Boas-vindas:</h4>
+            <div className="text-center">
+              <p className="text-lg font-bold text-green-700 mb-1">
+                <span className="text-2xl">100 Gabaritos</span> grátis
+              </p>
+              <p className="text-sm font-semibold text-green-600">
+                Sem cobrança durante 7 dias de teste
+              </p>
+            </div>
+          </div>
+          <div className="rounded-[1.5rem] border-2 border-border bg-muted p-6 mb-6">
+            <ul className="space-y-3">
+              <li className="flex items-center gap-3">
+                <div className="rounded-full border-2 border-border bg-green-100 p-1">
+                  <Check className="h-5 w-5 text-green-700" />
+                </div>
+                <span className="font-bold"><span className="text-primary text-lg">500 Gabaritos</span> todo mês</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="rounded-full border-2 border-border bg-green-100 p-1">
+                  <Check className="h-5 w-5 text-green-700" />
+                </div>
+                <span className="font-bold">Recursos exclusivos</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="rounded-full border-2 border-border bg-green-100 p-1">
+                  <Check className="h-5 w-5 text-green-700" />
+                </div>
+                <span className="font-bold">Suporte prioritário</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="rounded-full border-2 border-border bg-green-100 p-1">
+                  <Check className="h-5 w-5 text-green-700" />
+                </div>
+                <span className="font-bold">Sem anúncios</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="rounded-full border-2 border-border bg-green-100 p-1">
+                  <Check className="h-5 w-5 text-green-700" />
+                </div>
+                <span className="font-bold">Cancele quando quiser</span>
+              </li>
+            </ul>
+          </div>
+          <Button 
+            className="w-full rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase text-lg py-6 shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+          >
+            <Crown className="h-5 w-5 mr-2" />
+            Assinar Premium
+          </Button>
         </CardContent>
       </Card>
     </div>
