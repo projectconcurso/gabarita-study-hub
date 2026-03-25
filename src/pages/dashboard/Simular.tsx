@@ -10,6 +10,7 @@ import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } fr
 import { toast } from "sonner";
 import { QuestionContent } from "@/components/QuestionContent";
 import { NativeBannerModal } from "@/components/ads/NativeBannerModal";
+import { useIsPremium } from "@/hooks/useIsPremium";
 
 interface Questao {
   id: string;
@@ -98,6 +99,7 @@ const buildSimuladoBlocks = (
 export default function Simular() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isPremium, loading: premiumLoading } = useIsPremium();
   const [loading, setLoading] = useState(true);
   const [simulado, setSimulado] = useState<Simulado | null>(null);
   const [questoes, setQuestoes] = useState<Questao[]>([]);
@@ -114,7 +116,10 @@ export default function Simular() {
 
   // Abrir modal de anúncio quando chegar em questões específicas
   useEffect(() => {
-    if (questoes.length === 0) return;
+    if (questoes.length === 0 || premiumLoading) return;
+    
+    // Não mostrar anúncios para usuários premium ou trial
+    if (isPremium) return;
     
     const questionNumber = currentIndex + 1;
     const totalQuestions = questoes.length;
@@ -129,7 +134,7 @@ export default function Simular() {
     if (totalQuestions > 5 && questionNumber % 5 === 0 && questionNumber < totalQuestions) {
       setShowAdModal(true);
     }
-  }, [currentIndex, questoes.length]);
+  }, [currentIndex, questoes.length, isPremium, premiumLoading]);
 
   const loadSimulado = async () => {
     const { data: { user } } = await supabase.auth.getUser();

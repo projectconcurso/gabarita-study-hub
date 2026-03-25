@@ -100,28 +100,37 @@ serve(async (req: Request) => {
       supabaseServiceKey ?? ''
     );
 
-    // Validate user subscription status
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('subscription_status, trial_ends_at')
-      .eq('id', userId)
+    // Validar Gabaritos do usuário
+    const { data: userGabaritos, error: gabaritosError } = await supabaseClient
+      .from('user_gabaritos')
+      .select('gabaritos')
+      .eq('user_id', userId)
       .single();
 
-    if (profileError || !profile) {
-      throw new Error('Usuário não encontrado');
+    if (gabaritosError || !userGabaritos) {
+      throw new Error('Erro ao verificar saldo de Gabaritos');
     }
 
-    // Check if trial has expired or payment failed
-    if (profile.subscription_status === 'trial' && profile.trial_ends_at) {
-      const trialEndDate = new Date(profile.trial_ends_at);
-      if (new Date() > trialEndDate) {
-        throw new Error('Seu período de teste expirou. Atualize seu plano para continuar.');
-      }
-    } else if (profile.subscription_status === 'past_due') {
-      throw new Error('Seu pagamento foi recusado. Atualize seu método de pagamento para continuar.');
-    } else if (profile.subscription_status === 'cancelled') {
-      throw new Error('Sua assinatura foi cancelada. Assine novamente para continuar.');
+    // Calcular custo baseado na quantidade de questões
+    let custoGabaritos = 0;
+    if (numQuestoes >= 1 && numQuestoes <= 20) {
+      custoGabaritos = 5;
+    } else if (numQuestoes >= 21 && numQuestoes <= 40) {
+      custoGabaritos = 10;
+    } else if (numQuestoes >= 41 && numQuestoes <= 60) {
+      custoGabaritos = 15;
+    } else if (numQuestoes >= 61 && numQuestoes <= 80) {
+      custoGabaritos = 20;
+    } else {
+      throw new Error('Quantidade de questões inválida. Escolha entre 1 e 80 questões.');
     }
+
+    // Verificar se usuário tem Gabaritos suficientes
+    if (userGabaritos.gabaritos < custoGabaritos) {
+      throw new Error(`Gabaritos insuficientes. Você precisa de ${custoGabaritos} Gabaritos para criar este simulado, mas tem apenas ${userGabaritos.gabaritos}.`);
+    }
+
+    console.log(`Custo do simulado: ${custoGabaritos} Gabaritos | Saldo do usuário: ${userGabaritos.gabaritos}`);
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     console.log('OPENAI_API_KEY definida:', !!OPENAI_API_KEY);
