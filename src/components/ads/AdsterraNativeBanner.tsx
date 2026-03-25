@@ -29,11 +29,11 @@ export function AdsterraNativeBanner({
       const adContainer = document.createElement('div');
       adContainer.id = 'container-3e40931ca3e753c488c9373c9b7e7ef8';
       
-      // Criar script do Adsterra Native Banner
+      // Criar script do Adsterra Native Banner - Forçar HTTP para evitar erro SSL
       const script = document.createElement('script');
       script.async = true;
       script.setAttribute('data-cfasync', 'false');
-      script.src = '//pl28973797.profitablecpmratenetwork.com/3e40931ca3e753c488c9373c9b7e7ef8/invoke.js';
+      script.src = 'http://pl28973797.profitablecpmratenetwork.com/3e40931ca3e753c488c9373c9b7e7ef8/invoke.js';
       
       // Adicionar ao container
       if (containerRef.current) {
