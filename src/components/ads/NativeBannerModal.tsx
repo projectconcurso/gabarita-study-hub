@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useIsPremium } from '@/hooks/useIsPremium';
-import { X } from 'lucide-react';
 
 interface NativeBannerModalProps {
   isOpen: boolean;
@@ -152,36 +151,16 @@ export function NativeBannerModal({
           onClick={(e) => e.stopPropagation()}
           style={{ zIndex: 100000 }}
         >
-          {/* Botão Fechar */}
-          <button
-            onClick={canClose ? onClose : undefined}
-            disabled={!canClose}
-            className={`absolute top-4 right-4 rounded-full border-2 border-border p-2 shadow-soft transition-all ${
-              canClose 
-                ? 'bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-pointer' 
-                : 'bg-gray-200 cursor-not-allowed opacity-50'
-            }`}
-            aria-label="Fechar"
-          >
-            {canClose ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <span className="h-5 w-5 flex items-center justify-center text-xs font-black">
-                {secondsRemaining}
-              </span>
-            )}
-          </button>
-          
           {/* Título */}
           <div className="mb-4">
             <h3 className="text-xl font-black uppercase text-foreground">
               Apoie o Gabarit
             </h3>
             <p className="text-sm font-semibold text-muted-foreground mt-1">
-              {canClose 
-                ? 'Obrigado! Você pode fechar agora ou continuar estudando'
-                : `Aguarde ${secondsRemaining} segundos para continuar...`
-              }
+              Veja um anúncio rápido para continuar estudando gratuitamente
+            </p>
+            <p className="text-xs font-semibold text-primary mt-2">
+              💎 Quer estudar sem anúncios? Assine o Plano Premium mensal!
             </p>
           </div>
           

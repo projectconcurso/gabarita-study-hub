@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Sidebar from "@/components/dashboard/Sidebar";
 import type { User } from "@supabase/supabase-js";
 import { isProfileComplete } from "@/lib/profileCompletion";
+import { MonetagVignette } from "@/components/ads/MonetagVignette";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -68,6 +69,8 @@ export default function Dashboard() {
         <Outlet />
         </div>
       </main>
+      {/* Monetag Vignette - Só carrega quando usuário está logado */}
+      <MonetagVignette />
     </div>
   );
 }
