@@ -33,7 +33,7 @@ export function AdsterraNativeBanner({
       const script = document.createElement('script');
       script.async = true;
       script.setAttribute('data-cfasync', 'false');
-      script.src = 'https://pl28973797.profitablecpmratenetwork.com/3e40931ca3e753c488c9373c9b7e7ef8/invoke.js';
+      script.src = '//pl28973797.profitablecpmratenetwork.com/3e40931ca3e753c488c9373c9b7e7ef8/invoke.js';
       
       // Adicionar ao container
       if (containerRef.current) {
