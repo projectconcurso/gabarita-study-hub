@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { QuestionContent } from "@/components/QuestionContent";
+import { AdsterraNativeBanner } from "@/components/ads/AdsterraNativeBanner";
 
 interface Questao {
   id: string;
@@ -414,6 +415,23 @@ export default function Simular() {
     (_, chunkIndex) => questoes.slice(chunkIndex * 10, chunkIndex * 10 + 10).map((_, index) => chunkIndex * 10 + index)
   );
 
+  // Função para determinar se deve mostrar Native Banner
+  const shouldShowNativeBanner = (currentQuestionIndex: number, totalQuestions: number): boolean => {
+    const questionNumber = currentQuestionIndex + 1; // Converter para 1-indexed
+    
+    // Se total = 5, mostrar a cada 3 questões (após questão 3)
+    if (totalQuestions === 5) {
+      return questionNumber === 3;
+    }
+    
+    // Se total > 5, mostrar a cada 5 questões (após questões 5, 10, 15, etc)
+    if (totalQuestions > 5) {
+      return questionNumber % 5 === 0 && questionNumber < totalQuestions;
+    }
+    
+    return false;
+  };
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -480,6 +498,11 @@ export default function Simular() {
           </RadioGroup>
         </CardContent>
       </Card>
+
+      {/* Native Banner da Adsterra - Aparece a cada 5 questões (ou 3 se total = 5) */}
+      {shouldShowNativeBanner(currentIndex, questoes.length) && (
+        <AdsterraNativeBanner />
+      )}
 
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <Button
