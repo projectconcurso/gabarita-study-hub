@@ -31,24 +31,32 @@ export function NativeBannerModal({
       containerRef.current.innerHTML = '';
       
       try {
-        // Criar container div com ID específico do Adsterra
-        const adContainer = document.createElement('div');
-        adContainer.id = 'container-3e40931ca3e753c488c9373c9b7e7ef8';
+        // Criar script de configuração atOptions
+        const configScript = document.createElement('script');
+        configScript.type = 'text/javascript';
+        configScript.text = `
+          atOptions = {
+            'key' : '15a7f63709ce86d0a30989c21e9fa3ad',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        `;
         
-        // Criar script do Adsterra Native Banner - Forçar HTTP para evitar erro SSL
+        // Criar script do Adsterra Banner Display
         const script = document.createElement('script');
-        script.async = true;
-        script.setAttribute('data-cfasync', 'false');
-        script.src = 'http://pl28973797.profitablecpmratenetwork.com/3e40931ca3e753c488c9373c9b7e7ef8/invoke.js';
+        script.type = 'text/javascript';
+        script.src = 'https://www.highperformanceformat.com/15a7f63709ce86d0a30989c21e9fa3ad/invoke.js';
         
         // Adicionar ao container
-        containerRef.current.appendChild(adContainer);
+        containerRef.current.appendChild(configScript);
         containerRef.current.appendChild(script);
         scriptLoadedRef.current = true;
         
-        console.log('Adsterra Native Banner carregado no modal');
+        console.log('Adsterra Banner Display carregado no modal');
       } catch (error) {
-        console.error('Erro ao carregar Adsterra Native Banner:', error);
+        console.error('Erro ao carregar Adsterra Banner:', error);
       }
     }, 300);
     
@@ -138,10 +146,10 @@ export function NativeBannerModal({
             </p>
           </div>
           
-          {/* Container do Native Banner */}
+          {/* Container do Banner Display */}
           <div 
             ref={containerRef}
-            className="adsterra-native-banner-modal min-h-[250px] flex items-center justify-center bg-gray-50 rounded-xl"
+            className="adsterra-banner-modal min-h-[90px] flex items-center justify-center bg-gray-50 rounded-xl p-4"
           />
           
           {/* Botão Continuar */}
