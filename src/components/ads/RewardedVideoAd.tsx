@@ -20,6 +20,7 @@ declare global {
   interface Window {
     initializeAndOpenPlayer?: (options: {
       apiKey: string;
+      zoneId: string;
       injectionElementId: string;
       adStatusCallbackFn?: (status: string) => void;
       adErrorCallbackFn?: (error: any) => void;
@@ -65,7 +66,8 @@ export const RewardedVideoAd: React.FC<RewardedVideoAdProps> = ({
     try {
       // Configurar callbacks do AppLixir v6
       const options = {
-        apiKey: apiKey,
+        apiKey,
+        zoneId,
         injectionElementId: 'applixir-player-container',
         
         adStatusCallbackFn: async (status: any) => {
