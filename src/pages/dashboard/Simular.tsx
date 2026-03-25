@@ -9,8 +9,6 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { QuestionContent } from "@/components/QuestionContent";
-import { MontagInterstitial } from "@/components/ads/MontagInterstitial";
-import { useAdTrigger } from "@/hooks/useAdTrigger";
 
 interface Questao {
   id: string;
@@ -107,12 +105,6 @@ export default function Simular() {
   const [resultado, setResultado] = useState<{ acertos: number; percentual: number } | null>(null);
   const [finalizando, setFinalizando] = useState(false);
   const [blocks, setBlocks] = useState<SimuladoBlock[]>([]);
-  
-  // Sistema de anúncios - mostra a cada 5 questões respondidas
-  const { showAd, closeAd, incrementQuestions, reset } = useAdTrigger({ 
-    questionsInterval: 5,
-    enabled: true 
-  });
 
   useEffect(() => {
     loadSimulado();
@@ -185,9 +177,6 @@ export default function Simular() {
     const questaoAtual = questoes[currentIndex];
     setRespostas({ ...respostas, [questaoAtual.id]: resposta });
     await salvarResposta(questaoAtual.id, resposta);
-    
-    // Incrementar contador de questões para sistema de anúncios
-    incrementQuestions();
   };
 
   const proximaQuestao = () => {
@@ -541,12 +530,6 @@ export default function Simular() {
           </Button>
         )}
       </div>
-
-      {/* Pausa a cada 5 questões respondidas */}
-      <MontagInterstitial 
-        show={showAd} 
-        onClose={closeAd}
-      />
     </div>
   );
 }
