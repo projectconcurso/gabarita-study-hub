@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useIsPremium } from '@/hooks/useIsPremium';
 import { X } from 'lucide-react';
@@ -15,6 +15,31 @@ export function NativeBannerModal({
   const { isPremium, loading } = useIsPremium();
   const containerRef = useRef<HTMLDivElement>(null);
   const scriptLoadedRef = useRef(false);
+  const [secondsRemaining, setSecondsRemaining] = useState(10);
+  const [canClose, setCanClose] = useState(false);
+  
+  // Timer de 10 segundos antes de permitir fechar
+  useEffect(() => {
+    if (!isOpen || loading || isPremium) return;
+    
+    // Resetar timer quando modal abre
+    setSecondsRemaining(10);
+    setCanClose(false);
+    
+    // Countdown de 10 segundos
+    const interval = setInterval(() => {
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          setCanClose(true);
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [isOpen, loading, isPremium]);
   
   useEffect(() => {
     // Não carregar ad se for premium, ainda estiver carregando, ou modal fechado
@@ -108,7 +133,7 @@ export function NativeBannerModal({
           width: '100%',
           height: '100%'
         }}
-        onClick={onClose}
+        onClick={canClose ? onClose : undefined}
       />
       
       {/* Modal - Centralizado */}
@@ -129,11 +154,22 @@ export function NativeBannerModal({
         >
           {/* Botão Fechar */}
           <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full border-2 border-border bg-white p-2 shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+            onClick={canClose ? onClose : undefined}
+            disabled={!canClose}
+            className={`absolute top-4 right-4 rounded-full border-2 border-border p-2 shadow-soft transition-all ${
+              canClose 
+                ? 'bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-pointer' 
+                : 'bg-gray-200 cursor-not-allowed opacity-50'
+            }`}
             aria-label="Fechar"
           >
-            <X className="h-5 w-5" />
+            {canClose ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <span className="h-5 w-5 flex items-center justify-center text-xs font-black">
+                {secondsRemaining}
+              </span>
+            )}
           </button>
           
           {/* Título */}
@@ -142,7 +178,10 @@ export function NativeBannerModal({
               Apoie o Gabarit
             </h3>
             <p className="text-sm font-semibold text-muted-foreground mt-1">
-              Veja um anúncio rápido para continuar estudando gratuitamente
+              {canClose 
+                ? 'Obrigado! Você pode fechar agora ou continuar estudando'
+                : `Aguarde ${secondsRemaining} segundos para continuar...`
+              }
             </p>
           </div>
           
@@ -155,10 +194,15 @@ export function NativeBannerModal({
           {/* Botão Continuar */}
           <div className="mt-6 flex justify-center">
             <button
-              onClick={onClose}
-              className="rounded-full border-2 border-border bg-primary text-primary-foreground px-6 py-3 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
+              onClick={canClose ? onClose : undefined}
+              disabled={!canClose}
+              className={`rounded-full border-2 border-border px-6 py-3 font-black uppercase shadow-soft transition-all ${
+                canClose
+                  ? 'bg-primary text-primary-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none cursor-pointer'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50'
+              }`}
             >
-              Continuar Estudando
+              {canClose ? 'Continuar Estudando' : `Aguarde ${secondsRemaining}s`}
             </button>
           </div>
         </div>
