@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useIsPremium } from '@/hooks/useIsPremium';
 import { X } from 'lucide-react';
 
@@ -77,25 +78,51 @@ export function NativeBannerModal({
   // Não mostrar modal se for premium, estiver carregando, ou modal fechado
   if (loading || isPremium || !isOpen) return null;
   
-  return (
-    <div className="fixed inset-0 z-[9999]" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+  const modalContent = (
+    <div 
+      className="fixed top-0 left-0 right-0 bottom-0 z-[99999]"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 99999
+      }}
+    >
       {/* Overlay - Cobre toda a tela */}
       <div 
-        className="absolute inset-0 bg-black/60"
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}
+        className="absolute top-0 left-0 w-full h-full bg-black/70"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
         onClick={onClose}
       />
       
       {/* Modal - Centralizado */}
-      <div className="absolute inset-0 flex items-center justify-center p-4" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <div 
+        className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%'
+        }}
+      >
         <div 
           className="relative w-full max-w-2xl bg-white rounded-[2rem] border-4 border-border shadow-strong p-6 animate-in zoom-in-95 duration-200"
           onClick={(e) => e.stopPropagation()}
+          style={{ zIndex: 100000 }}
         >
           {/* Botão Fechar */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 rounded-full border-2 border-border bg-white p-2 shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all z-10"
+            className="absolute top-4 right-4 rounded-full border-2 border-border bg-white p-2 shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
             aria-label="Fechar"
           >
             <X className="h-5 w-5" />
@@ -130,4 +157,7 @@ export function NativeBannerModal({
       </div>
     </div>
   );
+  
+  // Renderizar usando Portal para garantir que está fora da hierarquia DOM
+  return createPortal(modalContent, document.body);
 }
