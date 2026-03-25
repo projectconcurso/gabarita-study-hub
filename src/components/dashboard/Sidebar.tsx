@@ -193,10 +193,10 @@ export default function Sidebar() {
               <Link key={item.path} to={item.path} className="min-w-0">
                 <Button
                   variant="ghost"
-                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-0.5 py-2 text-[9px] font-black uppercase leading-tight shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
+                  className={`relative flex h-auto w-full flex-col items-center gap-1 rounded-[1.2rem] border-2 px-1 py-2 text-[8px] font-black uppercase leading-none shadow-soft transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${isActive ? "border-border bg-primary text-primary-foreground" : "border-border bg-white text-foreground hover:bg-muted hover:text-foreground"}`}
                 >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  <span className="w-full text-center leading-none">{item.label}</span>
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="w-full text-center overflow-hidden text-ellipsis px-0.5" style={{fontSize: '7px', lineHeight: '1'}}>{item.label}</span>
                   {showChatUnreadBadge && (
                     <span className="absolute right-1 top-1 inline-flex min-w-5 items-center justify-center rounded-full border-2 border-border bg-accent px-1 text-[10px] font-black text-accent-foreground">
                       {chatUnreadCount}
