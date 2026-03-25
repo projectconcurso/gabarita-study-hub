@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowRight, CheckCircle, XCircle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { QuestionContent } from "@/components/QuestionContent";
-import { AdsterraNativeBanner } from "@/components/ads/AdsterraNativeBanner";
+import { NativeBannerModal } from "@/components/ads/NativeBannerModal";
 
 interface Questao {
   id: string;
@@ -106,10 +106,30 @@ export default function Simular() {
   const [resultado, setResultado] = useState<{ acertos: number; percentual: number } | null>(null);
   const [finalizando, setFinalizando] = useState(false);
   const [blocks, setBlocks] = useState<SimuladoBlock[]>([]);
+  const [showAdModal, setShowAdModal] = useState(false);
 
   useEffect(() => {
     loadSimulado();
   }, [id]);
+
+  // Abrir modal de anúncio quando chegar em questões específicas
+  useEffect(() => {
+    if (questoes.length === 0) return;
+    
+    const questionNumber = currentIndex + 1;
+    const totalQuestions = questoes.length;
+    
+    // Se total = 5, mostrar após questão 3
+    if (totalQuestions === 5 && questionNumber === 3) {
+      setShowAdModal(true);
+      return;
+    }
+    
+    // Se total > 5, mostrar a cada 5 questões (5, 10, 15, etc)
+    if (totalQuestions > 5 && questionNumber % 5 === 0 && questionNumber < totalQuestions) {
+      setShowAdModal(true);
+    }
+  }, [currentIndex, questoes.length]);
 
   const loadSimulado = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -415,23 +435,6 @@ export default function Simular() {
     (_, chunkIndex) => questoes.slice(chunkIndex * 10, chunkIndex * 10 + 10).map((_, index) => chunkIndex * 10 + index)
   );
 
-  // Função para determinar se deve mostrar Native Banner
-  const shouldShowNativeBanner = (currentQuestionIndex: number, totalQuestions: number): boolean => {
-    const questionNumber = currentQuestionIndex + 1; // Converter para 1-indexed
-    
-    // Se total = 5, mostrar a cada 3 questões (após questão 3)
-    if (totalQuestions === 5) {
-      return questionNumber === 3;
-    }
-    
-    // Se total > 5, mostrar a cada 5 questões (após questões 5, 10, 15, etc)
-    if (totalQuestions > 5) {
-      return questionNumber % 5 === 0 && questionNumber < totalQuestions;
-    }
-    
-    return false;
-  };
-
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -499,11 +502,6 @@ export default function Simular() {
         </CardContent>
       </Card>
 
-      {/* Native Banner da Adsterra - Aparece a cada 5 questões (ou 3 se total = 5) */}
-      {shouldShowNativeBanner(currentIndex, questoes.length) && (
-        <AdsterraNativeBanner />
-      )}
-
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <Button
           variant="outline"
@@ -553,6 +551,12 @@ export default function Simular() {
           </Button>
         )}
       </div>
+
+      {/* Modal de Native Banner */}
+      <NativeBannerModal 
+        isOpen={showAdModal} 
+        onClose={() => setShowAdModal(false)} 
+      />
     </div>
   );
 }
