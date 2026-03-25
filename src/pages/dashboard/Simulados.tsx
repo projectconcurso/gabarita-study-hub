@@ -410,8 +410,8 @@ export default function Simulados() {
       return;
     }
 
-    if (totalQuestoes < 5 || totalQuestoes > 80) {
-      toast.error("O total de questões deve ficar entre 5 e 80");
+    if (totalQuestoes < 5 || totalQuestoes > 20) {
+      toast.error("O total de questões deve ficar entre 5 e 20");
       return;
     }
 
@@ -634,23 +634,23 @@ export default function Simulados() {
                       </div>
                       <div className="grid gap-3 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label htmlFor={`tema-${group.id}`}>Assunto</Label>
-                          <Input
-                            id={`tema-${group.id}`}
-                            placeholder="Ex: Física"
-                            className="h-12 rounded-2xl border-2 border-border bg-white"
-                            value={group.tema}
-                            onChange={(e) => updateTopicGroup(group.id, "tema", e.target.value)}
-                          />
-                        </div>
-                        <div className="space-y-2">
                           <Label htmlFor={`materia-${group.id}`}>Matéria</Label>
                           <Input
                             id={`materia-${group.id}`}
-                            placeholder="Ex: Mecânica"
+                            placeholder="Ex: Física"
                             className="h-12 rounded-2xl border-2 border-border bg-white"
                             value={group.materia}
                             onChange={(e) => updateTopicGroup(group.id, "materia", e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`tema-${group.id}`}>Assunto</Label>
+                          <Input
+                            id={`tema-${group.id}`}
+                            placeholder="Ex: Mecânica"
+                            className="h-12 rounded-2xl border-2 border-border bg-white"
+                            value={group.tema}
+                            onChange={(e) => updateTopicGroup(group.id, "tema", e.target.value)}
                           />
                         </div>
                         <div className="space-y-2">
@@ -658,8 +658,8 @@ export default function Simulados() {
                           <Input
                             id={`quantidade-${group.id}`}
                             type="number"
-                            min="1"
-                            max="50"
+                            min="5"
+                            max="20"
                             className="h-12 rounded-2xl border-2 border-border bg-white"
                             value={group.quantidade}
                             onChange={(e) => updateTopicGroup(group.id, "quantidade", e.target.value)}
@@ -673,7 +673,7 @@ export default function Simulados() {
                   <div className="rounded-[1rem] border-2 border-border bg-[#f7cf3d] px-4 py-3 text-sm font-black uppercase text-foreground">
                     Total de questões: {totalQuestoes}
                   </div>
-                  {totalQuestoes >= 5 && totalQuestoes <= 80 && (
+                  {totalQuestoes >= 5 && totalQuestoes <= 20 && (
                     <div className="rounded-[1rem] border-2 border-yellow-300 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-3 flex items-center justify-between">
                       <span className="text-sm font-bold text-gray-700">Custo:</span>
                       <div className="flex items-center gap-2">
@@ -688,12 +688,12 @@ export default function Simulados() {
               <Button 
                 className="w-full rounded-full border-2 border-border bg-accent text-accent-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" 
                 onClick={createSimulado}
-                disabled={loading || totalQuestoes < 5 || totalQuestoes > 80}
+                disabled={loading || totalQuestoes < 5 || totalQuestoes > 20}
               >
                 {loading ? "Gerando..." : (
                   <span className="flex items-center justify-center gap-2">
                     <span>Criar Simulado</span>
-                    {totalQuestoes >= 5 && totalQuestoes <= 80 && (
+                    {totalQuestoes >= 5 && totalQuestoes <= 20 && (
                       <>
                         <span>•</span>
                         <Coins className="h-4 w-4" />
@@ -896,7 +896,7 @@ export default function Simulados() {
       <InsufficientBalanceDialog
         open={insufficientBalanceOpen}
         onOpenChange={setInsufficientBalanceOpen}
-        required={totalQuestoes >= 5 && totalQuestoes <= 80 ? calculateSimuladoCost(totalQuestoes) : 0}
+        required={totalQuestoes >= 5 && totalQuestoes <= 20 ? calculateSimuladoCost(totalQuestoes) : 0}
         available={gabaritosBalance}
         questoesCount={totalQuestoes}
       />

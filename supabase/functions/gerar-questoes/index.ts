@@ -111,19 +111,12 @@ serve(async (req: Request) => {
       throw new Error('Erro ao verificar saldo de Gabaritos');
     }
 
-    // Calcular custo baseado na quantidade de questões
-    let custoGabaritos = 0;
-    if (numQuestoes >= 1 && numQuestoes <= 20) {
-      custoGabaritos = 5;
-    } else if (numQuestoes >= 21 && numQuestoes <= 40) {
-      custoGabaritos = 10;
-    } else if (numQuestoes >= 41 && numQuestoes <= 60) {
-      custoGabaritos = 15;
-    } else if (numQuestoes >= 61 && numQuestoes <= 80) {
-      custoGabaritos = 20;
-    } else {
-      throw new Error('Quantidade de questões inválida. Escolha entre 1 e 80 questões.');
+    // Calcular custo baseado na quantidade de questões (cada questão = 2 Gabaritos)
+    if (numQuestoes < 5 || numQuestoes > 20) {
+      throw new Error('Quantidade de questões inválida. Escolha entre 5 e 20 questões.');
     }
+    
+    const custoGabaritos = numQuestoes * 2;
 
     // Verificar se usuário tem Gabaritos suficientes
     if (userGabaritos.gabaritos < custoGabaritos) {
@@ -411,7 +404,7 @@ Retorne APENAS um JSON válido no formato:
             content: prompt
           }
         ],
-        max_tokens: 4000,
+        max_tokens: 16000,
         response_format: { type: 'json_object' }
       }),
     });
@@ -456,7 +449,7 @@ Retorne APENAS um JSON válido no formato:
     }
 
     // Validar e normalizar cada questão (processamento assíncrono para gerar imagens)
-    const questoesValidadas = await Promise.all(questoesGeradas.map(async (q: any, index: number) => {
+    let questoesValidadas = await Promise.all(questoesGeradas.map(async (q: any, index: number) => {
       console.log(`Validando questão ${index + 1}:`, JSON.stringify(q, null, 2));
       
       // Garantir que temos os campos necessários
@@ -496,8 +489,9 @@ Retorne APENAS um JSON válido no formato:
       };
     }));
 
+    // Validação estrita: deve gerar exatamente o número solicitado
     if (questoesValidadas.length !== Number(numQuestoes)) {
-      throw new Error(`A IA retornou ${questoesValidadas.length} questões, mas eram esperadas ${numQuestoes}`);
+      throw new Error(`A IA retornou ${questoesValidadas.length} questões, mas eram esperadas ${numQuestoes}. Tente novamente ou reduza a quantidade de questões.`);
     }
 
     const normalizedEnunciados = questoesValidadas.map((questao) =>

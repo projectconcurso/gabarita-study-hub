@@ -117,10 +117,10 @@ serve(async (req: Request) => {
     const customer = await customerResponse.json();
     const customerId = customer.id;
 
-    // Step 2: Create Checkout Session with 3-day trial
+    // Step 2: Create Checkout Session with 7-day trial
     // Following Stripe best practices: always collect payment via Checkout, even with trial
     const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + 3);
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
     const trialEndTimestamp = Math.floor(trialEndDate.getTime() / 1000);
     const appOrigin = getAppOrigin(req);
 

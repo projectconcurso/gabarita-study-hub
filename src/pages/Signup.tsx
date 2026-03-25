@@ -76,40 +76,10 @@ export default function Signup() {
         return;
       }
 
-      const successUrl = `${window.location.origin}/confirm-email?email=${encodeURIComponent(data.email)}`;
-      const cancelUrl = `${window.location.origin}/signup`;
+      toast.success("Conta criada! Agora escolha seu plano.");
 
-      const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke(
-        "create-stripe-subscription",
-        {
-          body: {
-            userId: authData.user.id,
-            email: data.email,
-            name: `${data.nome} ${data.sobrenome}`,
-            successUrl,
-            cancelUrl,
-          },
-        }
-      );
-
-      if (subscriptionError) {
-        console.error("Subscription creation error:", subscriptionError);
-        const errorMessage =
-          typeof subscriptionError.context === "string"
-            ? subscriptionError.context
-            : subscriptionError.message || "Erro ao criar assinatura.";
-        toast.error(errorMessage);
-        return;
-      }
-
-      toast.success("Conta criada! Agora finalize o checkout para ativar seu plano.");
-
-      if (subscriptionData?.checkoutUrl) {
-        window.location.href = subscriptionData.checkoutUrl;
-        return;
-      }
-
-      navigate(`/confirm-email?email=${encodeURIComponent(data.email)}`);
+      // Redirecionar para página de seleção de plano
+      navigate(`/plan-selection?userId=${authData.user.id}&email=${encodeURIComponent(data.email)}&name=${encodeURIComponent(`${data.nome} ${data.sobrenome}`)}`);
     } catch (signupError) {
       console.error("Unexpected signup error:", signupError);
       if (signupError instanceof Error) {
@@ -127,15 +97,15 @@ export default function Signup() {
       <div className="mx-auto grid min-h-[calc(100svh-2rem)] max-w-6xl items-start gap-6 sm:min-h-[calc(100svh-3rem)] sm:gap-8 lg:min-h-[calc(100vh-5rem)] lg:items-center lg:gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <section className="space-y-4 sm:space-y-6">
           <div className="inline-flex items-center rounded-full border-2 border-border bg-[#f7cf3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-soft sm:px-5 sm:text-sm">
-            Comece seu período premium com segurança
+            Comece grátis ou teste premium por 7 dias
           </div>
           <h1 className="max-w-2xl text-4xl font-black uppercase leading-[0.95] text-foreground sm:text-5xl md:text-7xl">
             Crie sua
             <span className="block text-primary">conta</span>
-            <span className="block text-accent">premium</span>
+            <span className="block text-accent">agora</span>
           </h1>
           <p className="max-w-xl text-base font-semibold text-muted-foreground sm:text-lg md:text-xl">
-            Você cria sua conta, cadastra o pagamento no Stripe e depois confirma o email para acessar a dashboard.
+            Escolha entre o plano gratuito com anúncios ou teste o Premium por 7 dias sem pagar nada.
           </p>
         </section>
 
@@ -148,7 +118,7 @@ export default function Signup() {
               Criar conta
             </CardTitle>
             <CardDescription className="text-center text-sm font-semibold text-muted-foreground sm:text-base">
-              Preencha seus dados e siga para o checkout seguro do Stripe.
+              Preencha seus dados para começar sua jornada de estudos.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 p-4 sm:space-y-6 sm:p-6">
@@ -209,7 +179,7 @@ export default function Signup() {
                   )}
                 />
                 <Button type="submit" className="h-auto min-h-12 w-full whitespace-normal rounded-full border-2 border-border bg-accent px-4 py-3 text-center font-black uppercase leading-tight text-accent-foreground shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" disabled={loading}>
-                  {loading ? "Criando conta..." : "Criar conta e seguir para pagamento"}
+                  {loading ? "Criando conta..." : "Criar conta e escolher plano"}
                 </Button>
               </form>
             </Form>
