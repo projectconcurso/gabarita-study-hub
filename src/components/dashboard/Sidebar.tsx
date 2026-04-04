@@ -104,14 +104,14 @@ export default function Sidebar() {
 
   return (
     <>
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b-4 border-border bg-[#f7cf3d] px-4 py-3 lg:hidden">
-        <Link to="/dashboard" className="min-w-0">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b-4 border-border bg-[#f7cf3d] px-2 py-2 lg:hidden">
+        <Link to="/dashboard" className="shrink-0">
           <FocaLogo />
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 ml-2">
           <LevelCard variant="mobile" />
           <div 
-            className="cursor-pointer"
+            className="cursor-pointer shrink-0"
             onClick={() => navigate("/dashboard/loja")}
           >
             <GabaritosBalance showLabel={false} size="sm" />
@@ -119,11 +119,11 @@ export default function Sidebar() {
           <Button
             type="button"
             variant="outline"
-            className="h-11 rounded-full border-2 border-border bg-white px-4 font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            className="h-9 rounded-full border-2 border-border bg-white px-3 text-xs font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             onClick={handleLogout}
           >
-            <LogOut className="mr-2 h-4 w-4" />
-            Sair
+            <LogOut className="h-3.5 w-3.5" />
+            <span className="ml-1.5">Sair</span>
           </Button>
         </div>
       </div>

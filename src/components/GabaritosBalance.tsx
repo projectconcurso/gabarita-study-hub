@@ -48,7 +48,7 @@ export function GabaritosBalance({ showLabel = true, size = 'md' }: GabaritosBal
         return;
       }
       
-      setBalance(data.gabaritos ?? 0);
+      setBalance((data as any).gabaritos ?? 0);
     } catch (error) {
       console.error('Erro ao carregar saldo de Gabaritos:', error);
       setBalance(0);
@@ -79,9 +79,11 @@ export function GabaritosBalance({ showLabel = true, size = 'md' }: GabaritosBal
   }
 
   return (
-    <div className={`flex items-center gap-2 ${sizeClasses[size]}`}>
-      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-yellow-600 shadow-md">
-        <Coins className={`${iconSizes[size]} text-white`} />
+    <div className={`flex items-center gap-1.5 ${sizeClasses[size]}`}>
+      <div className={`flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-yellow-600 shadow-md ${
+        showLabel ? 'w-8 h-8' : 'w-6 h-6'
+      }`}>
+        <Coins className={`${showLabel ? iconSizes[size] : 'h-3 w-3'} text-white`} />
       </div>
       {showLabel && (
         <div className="flex flex-col">
@@ -90,7 +92,7 @@ export function GabaritosBalance({ showLabel = true, size = 'md' }: GabaritosBal
         </div>
       )}
       {!showLabel && (
-        <span className="font-bold text-gray-900">{balance.toLocaleString('pt-BR')}</span>
+        <span className="text-xs font-black text-gray-900">{balance.toLocaleString('pt-BR')}</span>
       )}
     </div>
   );

@@ -69,38 +69,38 @@ export function LevelCard({ variant = "sidebar" }: LevelCardProps) {
 
   if (variant === "mobile") {
     return (
-      <div className="flex items-center gap-2 rounded-full border-2 border-border bg-white px-3 py-1.5 shadow-soft">
-        <div className="relative h-8 w-8">
-          <svg className="h-8 w-8 -rotate-90 transform">
+      <div className="flex items-center gap-1.5 rounded-full border-2 border-border bg-white px-2 py-1 shadow-soft shrink-0">
+        <div className="relative h-6 w-6">
+          <svg className="h-6 w-6 -rotate-90 transform">
             <circle
-              cx="16"
-              cy="16"
-              r="14"
+              cx="12"
+              cy="12"
+              r="10"
               stroke="currentColor"
-              strokeWidth="3"
+              strokeWidth="2"
               fill="none"
               className="text-gray-200"
             />
             <circle
-              cx="16"
-              cy="16"
-              r="14"
+              cx="12"
+              cy="12"
+              r="10"
               stroke="currentColor"
-              strokeWidth="3"
+              strokeWidth="2"
               fill="none"
-              strokeDasharray={`${2 * Math.PI * 14}`}
-              strokeDashoffset={`${2 * Math.PI * 14 * (1 - progressPercentage / 100)}`}
+              strokeDasharray={`${2 * Math.PI * 10}`}
+              strokeDashoffset={`${2 * Math.PI * 10 * (1 - progressPercentage / 100)}`}
               className="text-blue-500 transition-all duration-300"
               strokeLinecap="round"
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs font-black text-foreground">{levelData.nivel}</span>
+            <span className="text-[10px] font-black text-foreground">{levelData.nivel}</span>
           </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-[10px] font-bold uppercase text-muted-foreground">Level</span>
-          <span className="text-xs font-black text-foreground">{levelData.total_xp} XP</span>
+        <div className="flex flex-col leading-none">
+          <span className="text-[8px] font-bold uppercase text-muted-foreground">Level</span>
+          <span className="text-[10px] font-black text-foreground">{levelData.total_xp} XP</span>
         </div>
       </div>
     );
