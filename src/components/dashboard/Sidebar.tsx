@@ -119,11 +119,10 @@ export default function Sidebar() {
           <Button
             type="button"
             variant="outline"
-            className="h-9 rounded-full border-2 border-border bg-white px-3 text-xs font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+            className="h-9 w-9 rounded-full border-2 border-border bg-white p-0 shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
             onClick={handleLogout}
           >
-            <LogOut className="h-3.5 w-3.5" />
-            <span className="ml-1.5">Sair</span>
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>
