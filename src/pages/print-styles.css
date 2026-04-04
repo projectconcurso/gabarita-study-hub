@@ -1,0 +1,157 @@
+/* Estilos para impressão de apostilas */
+@media print {
+  /* Oculta elementos desnecessários na impressão */
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  /* Remove bordas e sombras na impressão */
+  .print\\:border-0 {
+    border: none !important;
+  }
+
+  .print\\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  .print\\:rounded-none {
+    border-radius: 0 !important;
+  }
+
+  /* Remove padding e margin desnecessários */
+  .print\\:px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .print\\:py-0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Garante que o conteúdo não quebre de forma inadequada */
+  .print\\:break-after-avoid {
+    break-after: avoid !important;
+  }
+
+  .print\\:break-inside-avoid {
+    break-inside: avoid !important;
+  }
+
+  /* Ajusta cores para impressão */
+  .print\\:bg-transparent {
+    background-color: transparent !important;
+  }
+
+  .print\\:before\\:text-black::before {
+    color: black !important;
+  }
+
+  /* Configuração geral da página */
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+
+  body {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: black;
+    background: white;
+  }
+
+  /* Ajusta títulos para impressão */
+  h1 {
+    font-size: 24pt;
+    page-break-after: avoid;
+    margin-bottom: 16pt;
+  }
+
+  h2 {
+    font-size: 18pt;
+    page-break-after: avoid;
+    margin-top: 16pt;
+    margin-bottom: 12pt;
+  }
+
+  h3 {
+    font-size: 14pt;
+    page-break-after: avoid;
+    margin-top: 12pt;
+    margin-bottom: 8pt;
+  }
+
+  /* Ajusta parágrafos */
+  p {
+    margin-bottom: 10pt;
+    text-align: justify;
+  }
+
+  /* Ajusta listas */
+  ul, ol {
+    margin-bottom: 10pt;
+    margin-left: 20pt;
+  }
+
+  li {
+    margin-bottom: 5pt;
+  }
+
+  /* Ajusta código */
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    background-color: #f0f0f0;
+    padding: 2pt 4pt;
+  }
+
+  pre {
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    background-color: #f0f0f0;
+    padding: 10pt;
+    margin-bottom: 10pt;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Ajusta citações */
+  blockquote {
+    border-left: 2pt solid black;
+    background-color: #f9f9f9;
+    padding: 8pt 12pt;
+    margin-bottom: 10pt;
+    font-style: italic;
+  }
+
+  /* Ajusta separadores */
+  hr {
+    border-top: 1pt solid black;
+    margin: 16pt 0;
+  }
+
+  /* Garante que imagens não quebrem */
+  img {
+    max-width: 100%;
+    height: auto;
+    page-break-inside: avoid;
+  }
+
+  /* Ajusta tabelas */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10pt;
+  }
+
+  th, td {
+    border: 1pt solid black;
+    padding: 4pt 8pt;
+    text-align: left;
+  }
+
+  th {
+    font-weight: bold;
+    background-color: #f0f0f0;
+  }
+}

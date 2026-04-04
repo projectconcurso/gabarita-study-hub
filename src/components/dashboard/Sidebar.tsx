@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, FileText, Users, MessageCircle, User, LogOut, Sparkles } from "lucide-react";
+import { Home, FileText, Users, MessageCircle, User, LogOut, Sparkles, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { FocaLogo } from "@/components/FocaMascot";
 import { GabaritosBalance } from "@/components/GabaritosBalance";
+import { LevelCard } from "@/components/LevelCard";
 
 interface SidebarProfile {
   nome: string | null;
@@ -22,7 +23,7 @@ export default function Sidebar() {
   
   const menuItems = [
     { path: "/dashboard", icon: Home, label: "Início" },
-    { path: "/dashboard/simulados", icon: FileText, label: "Simulados" },
+    { path: "/dashboard/meus-estudos", icon: BookOpen, label: "Meus Estudos" },
     { path: "/dashboard/mural", icon: Sparkles, label: "Mural" },
     { path: "/dashboard/amigos", icon: Users, label: "Amigos" },
     { path: "/dashboard/chat", icon: MessageCircle, label: "Chat" },
@@ -108,6 +109,7 @@ export default function Sidebar() {
           <FocaLogo />
         </Link>
         <div className="flex items-center gap-2">
+          <LevelCard variant="mobile" />
           <div 
             className="cursor-pointer"
             onClick={() => navigate("/dashboard/loja")}
@@ -164,11 +166,14 @@ export default function Sidebar() {
         
         <div className="border-t-4 border-border bg-white p-4 space-y-3">
           <div className="mx-auto w-full max-w-sm">
+            <div className="mb-3">
+              <LevelCard variant="sidebar" />
+            </div>
             <div 
-              className="mb-3 p-3 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 cursor-pointer transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-soft"
+              className="mb-3 p-2 rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200 cursor-pointer transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-soft"
               onClick={() => navigate("/dashboard/loja")}
             >
-              <GabaritosBalance showLabel={true} size="md" />
+              <GabaritosBalance showLabel={true} size="sm" />
             </div>
             <Button
               variant="ghost"

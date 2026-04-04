@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, MapPin, GraduationCap, BookOpen, Award, TrendingUp, FileText, ArrowLeft, User } from "lucide-react";
+import { MessageCircle, MapPin, GraduationCap, BookOpen, Award, TrendingUp, FileText, ArrowLeft, User, Zap, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 interface FriendProfile {
@@ -19,6 +19,13 @@ interface FriendProfile {
   estado: string | null;
   area_forte: string | null;
   area_fraca: string | null;
+}
+
+interface UserXP {
+  nivel: number;
+  total_xp: number;
+  xp_para_proximo_nivel: number;
+  progresso_nivel: number;
 }
 
 interface FriendStats {
@@ -44,6 +51,8 @@ export default function PerfilAmigo() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<FriendProfile | null>(null);
   const [stats, setStats] = useState<FriendStats>({ totalSimulados: 0, mediaAcertos: 0 });
+  const [userXP, setUserXP] = useState<UserXP>({ nivel: 0, total_xp: 0, xp_para_proximo_nivel: 10, progresso_nivel: 0 });
+  const [isFriend, setIsFriend] = useState(false);
 
   useEffect(() => {
     void loadFriendProfile();
@@ -75,22 +84,15 @@ export default function PerfilAmigo() {
         return;
       }
 
-      const { data: friendship, error: friendshipError } = await supabase
+      // Verificar se é amigo (mas não bloquear visualização)
+      const { data: friendship } = await supabase
         .from("amizades")
         .select("id")
         .eq("status", "aceito")
         .or(`and(user_id.eq.${user.id},amigo_id.eq.${id}),and(user_id.eq.${id},amigo_id.eq.${user.id})`)
         .maybeSingle();
 
-      if (friendshipError) {
-        throw friendshipError;
-      }
-
-      if (!friendship) {
-        toast.error("Você só pode visualizar o perfil de amigos adicionados");
-        navigate("/dashboard/amigos");
-        return;
-      }
+      setIsFriend(!!friendship);
 
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
@@ -134,6 +136,19 @@ export default function PerfilAmigo() {
           )
         : 0;
 
+      // Buscar XP do usuário
+      // @ts-ignore - RPC types will be available after full type generation
+      const { data: xpData } = await supabase.rpc("buscar_xp_usuario", { p_user_id: id });
+      if (xpData) {
+        const xp = xpData as any;
+        setUserXP({
+          nivel: xp.nivel || 0,
+          total_xp: xp.total_xp || 0,
+          xp_para_proximo_nivel: xp.xp_para_proximo_nivel || 10,
+          progresso_nivel: xp.progresso_nivel || 0,
+        });
+      }
+
       setProfile(profileData as FriendProfile);
       setStats({ totalSimulados, mediaAcertos });
     } catch (error) {
@@ -149,6 +164,71 @@ export default function PerfilAmigo() {
   const handleOpenChat = () => {
     if (!profile) return;
     navigate(`/dashboard/chat?friend=${profile.id}`);
+  };
+
+  const handleSendFriendRequest = async () => {
+    if (!profile) return;
+
+    try {
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData.user;
+      if (!user) return;
+
+      // Verificar se já existe solicitação
+      const { data: existingFriendships } = await supabase
+        .from("amizades")
+        .select("id, status, user_id, amigo_id")
+        .or(`and(user_id.eq.${user.id},amigo_id.eq.${profile.id}),and(user_id.eq.${profile.id},amigo_id.eq.${user.id})`);
+
+      const friendships = existingFriendships ?? [];
+      
+      // Se já existe amizade aceita
+      if (friendships.some((f: any) => f.status === "aceito")) {
+        toast.error("Vocês já são amigos");
+        setIsFriend(true);
+        return;
+      }
+
+      // Se já enviou solicitação
+      if (friendships.some((f: any) => f.status === "pendente" && f.user_id === user.id)) {
+        toast.info("Você já enviou uma solicitação para este usuário");
+        return;
+      }
+
+      // Se tem solicitação reversa pendente, aceitar
+      const reversePending = friendships.find(
+        (f: any) => f.status === "pendente" && f.user_id === profile.id && f.amigo_id === user.id
+      );
+
+      if (reversePending) {
+        await (supabase
+          .from("amizades") as any)
+          .update({ status: "aceito" })
+          .eq("id", (reversePending as any).id);
+        
+        toast.success("Vocês agora são amigos!");
+        setIsFriend(true);
+        return;
+      }
+
+      // Enviar nova solicitação
+      const { error } = await (supabase
+        .from("amizades") as any)
+        .insert({
+          user_id: user.id,
+          amigo_id: profile.id,
+          status: "pendente",
+        });
+
+      if (error) {
+        toast.error("Erro ao enviar solicitação");
+      } else {
+        toast.success("Solicitação de amizade enviada!");
+      }
+    } catch (error) {
+      console.error("Erro ao enviar solicitação:", error);
+      toast.error("Erro ao enviar solicitação");
+    }
   };
 
   if (loading) {
@@ -175,9 +255,9 @@ export default function PerfilAmigo() {
           <div className="inline-flex rounded-full border-2 border-border bg-[#f7cf3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-soft">
             Perfil social
           </div>
-          <h1 className="text-4xl font-black uppercase">Perfil do Amigo</h1>
+          <h1 className="text-4xl font-black uppercase">Perfil do Usuário</h1>
           <p className="text-lg font-semibold text-muted-foreground">
-            Veja as informações públicas e o desempenho do seu amigo.
+            Veja as informações públicas e o desempenho deste usuário.
           </p>
         </div>
         <div className="flex gap-3">
@@ -190,14 +270,25 @@ export default function PerfilAmigo() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar
           </Button>
-          <Button
-            type="button"
-            className="rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-            onClick={handleOpenChat}
-          >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            Enviar mensagem
-          </Button>
+          {isFriend ? (
+            <Button
+              type="button"
+              className="rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              onClick={handleOpenChat}
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Enviar mensagem
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              className="rounded-full border-2 border-border bg-secondary text-secondary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              onClick={handleSendFriendRequest}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              Enviar solicitação
+            </Button>
+          )}
         </div>
       </div>
 
@@ -248,7 +339,7 @@ export default function PerfilAmigo() {
           <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
             <CardTitle className="text-2xl font-black uppercase">Informações do perfil</CardTitle>
             <CardDescription className="font-semibold text-muted-foreground">
-              Os principais dados compartilhados pelo seu amigo.
+              Os principais dados públicos deste usuário.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 p-6 md:grid-cols-2">
@@ -289,10 +380,39 @@ export default function PerfilAmigo() {
           <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
             <CardTitle className="text-2xl font-black uppercase">Estatísticas</CardTitle>
             <CardDescription className="font-semibold text-muted-foreground">
-              Desempenho do amigo nos simulados.
+              Desempenho e progresso do usuário.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-6">
+            {/* Level e XP */}
+            <div className="rounded-[1.2rem] border-2 border-border bg-gradient-to-br from-blue-50 to-green-50 p-4 shadow-soft">
+              <p className="mb-3 flex items-center gap-2 text-sm font-black uppercase text-muted-foreground">
+                <Zap className="h-4 w-4" /> Progresso de Conta
+              </p>
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground">Level</p>
+                  <p className="text-3xl font-black text-blue-500">{userXP.nivel}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-semibold text-muted-foreground">XP Total</p>
+                  <p className="text-3xl font-black text-green-500">{userXP.total_xp}</p>
+                </div>
+              </div>
+              <div className="pt-3 border-t border-border">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Próximo nível</p>
+                <div className="h-2 w-full overflow-hidden rounded-full border border-border bg-gray-100">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
+                    style={{ width: `${userXP.progresso_nivel}%` }}
+                  />
+                </div>
+                <p className="mt-1 text-xs font-semibold text-muted-foreground text-right">
+                  {userXP.xp_para_proximo_nivel} XP restantes
+                </p>
+              </div>
+            </div>
+
             <div className="rounded-[1.2rem] border-2 border-border p-4 shadow-soft">
               <p className="mb-2 flex items-center gap-2 text-sm font-black uppercase text-muted-foreground">
                 <FileText className="h-4 w-4" /> Simulados concluídos

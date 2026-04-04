@@ -47,7 +47,8 @@ interface DashboardFriend {
   nome: string | null;
   sobrenome: string | null;
   foto_url: string | null;
-  cargo_desejado: string | null;
+  cidade: string | null;
+  estado: string | null;
 }
 
 interface DashboardStats {
@@ -57,7 +58,23 @@ interface DashboardStats {
   totalAmigos: number;
 }
 
+interface UserXP {
+  nivel: number;
+  total_xp: number;
+  xp_para_proximo_nivel: number;
+  progresso_nivel: number;
+}
+
+interface ProximoEstudo {
+  tipo: 'apostila' | 'simulado';
+  titulo: string;
+  materia: string;
+  assunto: string;
+  assuntoId: string;
+}
+
 export default function DashboardHome() {
+  const [userId, setUserId] = useState<string>("");
   const [profile, setProfile] = useState<DashboardProfile | null>(null);
   const [stats, setStats] = useState<DashboardStats>({
     totalSimuladosPendentes: 0,
@@ -67,6 +84,8 @@ export default function DashboardHome() {
   });
   const [recentSimulados, setRecentSimulados] = useState<DashboardSimulado[]>([]);
   const [friends, setFriends] = useState<DashboardFriend[]>([]);
+  const [userXP, setUserXP] = useState<UserXP>({ nivel: 0, total_xp: 0, xp_para_proximo_nivel: 10, progresso_nivel: 0 });
+  const [proximoEstudo, setProximoEstudo] = useState<ProximoEstudo | null>(null);
 
   useEffect(() => {
     void loadData();
@@ -77,6 +96,8 @@ export default function DashboardHome() {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
+    
+    setUserId(user.id);
 
     const [{ data: profileData }, { data: simuladosData }, { data: amizadesData }] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", user.id).single(),
@@ -116,10 +137,56 @@ export default function DashboardHome() {
     if (friendIds.length > 0) {
       const { data: friendProfiles } = await supabase
         .from("profiles")
-        .select("id, nome, sobrenome, foto_url, cargo_desejado")
+        .select("id, nome, sobrenome, foto_url, cidade, estado")
         .in("id", friendIds);
 
       resolvedFriends = (friendProfiles ?? []) as DashboardFriend[];
+    }
+
+    // Buscar XP do usuário
+    // @ts-ignore
+    const { data: xpData } = await supabase.rpc("buscar_xp_usuario", { p_user_id: user.id });
+    if (xpData) {
+      const xp = xpData as any;
+      setUserXP({
+        nivel: xp.nivel || 0,
+        total_xp: xp.total_xp || 0,
+        xp_para_proximo_nivel: xp.xp_para_proximo_nivel || 10,
+        progresso_nivel: xp.progresso_nivel || 0,
+      });
+    }
+
+    // Buscar próximo estudo (apostila não lida ou simulado pendente)
+    const { data: progressoData } = await supabase
+      .from("progresso_estudos")
+      .select("assunto_id, apostila_lida")
+      .eq("user_id", user.id)
+      .eq("apostila_lida", false)
+      .limit(1)
+      .single();
+
+    if (progressoData) {
+      const { data: assuntoData } = await supabase
+        .from("assuntos_materia")
+        .select("nome, materia_id")
+        .eq("id", (progressoData as any).assunto_id)
+        .single();
+
+      if (assuntoData) {
+        const { data: materiaData } = await supabase
+          .from("materias_concurso")
+          .select("nome")
+          .eq("id", (assuntoData as any).materia_id)
+          .single();
+
+        setProximoEstudo({
+          tipo: 'apostila',
+          titulo: 'Ler resumo',
+          materia: (materiaData as any)?.nome || '',
+          assunto: (assuntoData as any)?.nome || '',
+          assuntoId: (progressoData as any).assunto_id,
+        });
+      }
     }
 
     setProfile(profileValue);
@@ -136,8 +203,17 @@ export default function DashboardHome() {
   const welcomeName = profile?.nome || "Estudante";
   const firstPendingSimulado = recentSimulados.find((simulado) => simulado.status !== "concluido");
   const isFirstAccess = recentSimulados.length === 0 && stats.totalAmigos === 0;
-  const strongestCTA =
-    !profile?.cargo_desejado || !profile?.area_forte || !profile?.area_fraca
+  
+  // Prioridade: 1) Apostila não lida, 2) Simulado pendente, 3) Perfil incompleto, 4) Novo simulado
+  const strongestCTA = proximoEstudo
+    ? {
+        title: `Ler resumo: ${proximoEstudo.assunto}`,
+        description: `${proximoEstudo.materia} - Continue seus estudos lendo o resumo disponível.`,
+        href: `/dashboard/meu-cronograma`,
+        label: "Ir para Cronograma",
+        icon: FileText,
+      }
+    : !profile?.cargo_desejado || !profile?.area_forte || !profile?.area_fraca
       ? {
           title: "Complete seu perfil",
           description: "Deixe suas preferências em dia para receber simulados mais personalizados.",
@@ -201,13 +277,29 @@ export default function DashboardHome() {
                 </p>
               </div>
               <div className="rounded-[1.5rem] border-2 border-border bg-muted p-4">
-                <p className="text-xs font-black uppercase text-muted-foreground">Foco atual</p>
-                <p className="mt-2 text-lg font-black text-foreground">
-                  {profile?.cargo_desejado || profile?.area_fraca || "Defina seu próximo objetivo"}
-                </p>
-                <p className="mt-2 text-sm font-semibold text-muted-foreground">
-                  {profile?.cargo_desejado ? "Objetivo principal salvo no perfil." : "Atualize seu perfil para personalizar melhor a jornada."}
-                </p>
+                <p className="text-xs font-black uppercase text-muted-foreground">Progresso de Conta</p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground">Level</p>
+                    <p className="text-3xl font-black text-blue-500">{userXP.nivel}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-semibold text-muted-foreground">XP Total</p>
+                    <p className="text-3xl font-black text-green-500">{userXP.total_xp}</p>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-border">
+                  <p className="text-xs font-semibold text-muted-foreground">Próximo nível</p>
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full border border-border bg-gray-100">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 to-green-500 transition-all duration-300"
+                      style={{ width: `${userXP.progresso_nivel}%` }}
+                    />
+                  </div>
+                  <p className="mt-1 text-xs font-semibold text-muted-foreground text-right">
+                    {userXP.xp_para_proximo_nivel} XP restantes
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -377,7 +469,9 @@ export default function DashboardHome() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-black uppercase text-foreground">{fullName}</p>
                           <p className="truncate text-sm font-semibold text-muted-foreground">
-                            {friend.cargo_desejado || "Estudando com você no Gabarit"}
+                            {friend.cidade && friend.estado 
+                              ? `${friend.cidade}, ${friend.estado}` 
+                              : "Estudando com você no Gabarit"}
                           </p>
                         </div>
                         <Link to={`/dashboard/chat?friend=${friend.id}`} className="shrink-0">

@@ -263,11 +263,11 @@ export default function Mural() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase
-      .from("posts_mural")
+    const { error } = await (supabase
+      .from("posts_mural") as any)
       .insert({
         user_id: user.id,
-        conteudo: newPost,
+        conteudo: newPost.trim(),
         tipo: "texto",
       });
 
@@ -301,12 +301,12 @@ export default function Mural() {
       return;
     }
 
-    const { error } = await supabase
-      .from("reacoes_mural")
+    const { error } = await (supabase
+      .from("reacoes_mural") as any)
       .insert({
         post_id: post.id,
         user_id: user.id,
-        tipo: "like",
+        tipo: "curtida",
       });
 
     if (error) {
@@ -327,12 +327,12 @@ export default function Mural() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase
-      .from("comentarios_mural")
+    const { error } = await (supabase
+      .from("comentarios_mural") as any)
       .insert({
         post_id: postId,
         user_id: user.id,
-        conteudo,
+        conteudo: conteudo,
       });
 
     if (error) {
@@ -351,12 +351,35 @@ export default function Mural() {
       return;
     }
 
-    if (!confirm("Deseja adicionar este simulado à sua lista de simulados?")) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Calcular custo em gabaritos (2 gabaritos por questão)
+    const custoGabaritos = post.sharedSimulado.total_questoes * 2;
+
+    // Verificar saldo de gabaritos
+    const { data: userGabaritos } = await supabase
+      .from('user_gabaritos')
+      .select('gabaritos')
+      .eq('user_id', user.id)
+      .single();
+
+    const saldoAtual = userGabaritos && typeof (userGabaritos as any).gabaritos === 'number' 
+      ? (userGabaritos as any).gabaritos 
+      : 0;
+
+    if (saldoAtual < custoGabaritos) {
+      toast.error(`Gabaritos insuficientes. Necessário: ${custoGabaritos}, Disponível: ${saldoAtual}`);
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!confirm(
+      `Deseja adicionar este simulado à sua lista?\n\n` +
+      `Custo: ${custoGabaritos} Gabaritos (${post.sharedSimulado.total_questoes} questões × 2)\n` +
+      `Saldo atual: ${saldoAtual} Gabaritos`
+    )) {
+      return;
+    }
 
     const { data: sourceQuestions, error: sourceQuestionsError } = await supabase
       .from("questoes")
@@ -369,8 +392,8 @@ export default function Mural() {
       return;
     }
 
-    const { data: newSimulado, error: newSimuladoError } = await supabase
-      .from("simulados")
+    const { data: newSimulado, error: newSimuladoError } = await (supabase
+      .from("simulados") as any)
       .insert({
         user_id: user.id,
         titulo: post.sharedSimulado.titulo,
@@ -388,11 +411,11 @@ export default function Mural() {
       return;
     }
 
-    const { error: copyQuestionsError } = await supabase
-      .from("questoes")
+    const { error: copyQuestionsError } = await (supabase
+      .from("questoes") as any)
       .insert(
-        sourceQuestions.map((question) => ({
-          simulado_id: newSimulado.id,
+        (sourceQuestions as any[]).map((question) => ({
+          simulado_id: (newSimulado as any).id,
           enunciado: question.enunciado,
           alternativas: question.alternativas,
           resposta_correta: question.resposta_correta,
@@ -407,8 +430,21 @@ export default function Mural() {
       return;
     }
 
-    toast.success("Simulado adicionado à sua lista!");
-    navigate(`/dashboard/simular/${newSimulado.id}`);
+    // Descontar gabaritos após sucesso
+    const { error: deductError } = await (supabase as any).rpc('deduct_gabaritos_manual', {
+      p_user_id: user.id,
+      p_simulado_id: (newSimulado as any).id,
+      p_total_questoes: post.sharedSimulado.total_questoes
+    });
+
+    if (deductError) {
+      console.error('Erro ao descontar gabaritos:', deductError);
+      toast.warning('Simulado adicionado, mas houve erro ao descontar gabaritos');
+    } else {
+      toast.success(`Simulado adicionado à sua lista! (${custoGabaritos} Gabaritos descontados)`);
+    }
+
+    navigate(`/dashboard/simular/${(newSimulado as any).id}`);
   };
 
   const deletePost = async (postId: string) => {

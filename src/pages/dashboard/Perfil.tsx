@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TermosUsoModal } from "@/components/TermosUsoModal";
+import { PoliticaPrivacidadeModal } from "@/components/PoliticaPrivacidadeModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -80,6 +82,10 @@ export default function Perfil() {
   const [updatingEmail, setUpdatingEmail] = useState(false);
   const [sendingPasswordReset, setSendingPasswordReset] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [termosModalOpen, setTermosModalOpen] = useState(false);
+  const [privacidadeModalOpen, setPrivacidadeModalOpen] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     nome: "",
     sobrenome: "",
@@ -215,7 +221,7 @@ export default function Perfil() {
 
     const { error } = await supabase
       .from("profiles")
-      .upsert(payload, { onConflict: "id" });
+      .upsert(payload as any, { onConflict: "id" });
 
     if (error) {
       toast.error(`Erro ao atualizar perfil: ${error.message}`);
@@ -632,47 +638,48 @@ export default function Perfil() {
           </TabsContent>
 
           <TabsContent value="conta">
-            <div className="grid gap-6 xl:grid-cols-2">
-              <Card className="rounded-[2rem] border-4 border-border bg-white shadow-medium">
-                <CardHeader className="space-y-3 border-b-4 border-border bg-muted rounded-t-[1.7rem]">
-                  <CardTitle className="flex items-center gap-2 text-2xl font-black uppercase">
-                    <Mail className="w-5 h-5" />
+            <div className="space-y-4">
+              <Card className="rounded-[1.5rem] border-4 border-border bg-white shadow-medium">
+                <CardHeader className="space-y-2 border-b-4 border-border bg-muted rounded-t-[1.2rem] pb-4">
+                  <CardTitle className="flex items-center gap-2 text-xl font-black uppercase">
+                    <Mail className="w-4 h-4" />
                     Email da conta
                   </CardTitle>
-                  <CardDescription className="font-semibold text-muted-foreground">
-                    Revele seu email atual somente quando quiser e solicite a troca com confirmação no novo endereço.
+                  <CardDescription className="font-semibold text-sm text-muted-foreground">
+                    Revele seu email atual somente quando quiser
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="rounded-[1.2rem] border-2 border-border bg-muted p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
+                <CardContent className="space-y-4 pt-4">
+                  <div className="rounded-[1rem] border-2 border-border bg-muted p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1">
                         <p className="text-xs font-black uppercase text-muted-foreground">Email atual</p>
-                        <p className="mt-2 break-all text-base font-black text-foreground">
+                        <p className="mt-1 break-all text-sm font-black text-foreground">
                           {showAccountEmail ? accountEmail || "—" : maskEmail(accountEmail)}
                         </p>
                       </div>
                       <Button
                         type="button"
                         variant="outline"
+                        size="sm"
                         onClick={() => setShowAccountEmail((prev) => !prev)}
-                        className="rounded-full border-2 border-border bg-white font-black uppercase"
+                        className="rounded-full border-2 border-border bg-white font-black uppercase text-xs h-8 px-3"
                       >
-                        {showAccountEmail ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
+                        {showAccountEmail ? <EyeOff className="mr-1 h-3 w-3" /> : <Eye className="mr-1 h-3 w-3" />}
                         {showAccountEmail ? "Ocultar" : "Revelar"}
                       </Button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="novo-email" className="flex items-center gap-1">
-                      <Mail className="w-4 h-4" />
+                    <Label htmlFor="novo-email" className="flex items-center gap-1 text-sm">
+                      <Mail className="w-3 h-3" />
                       Novo email
                     </Label>
                     <Input
                       id="novo-email"
                       type="email"
-                      className="h-12 rounded-2xl border-2 border-border bg-white"
+                      className="h-10 rounded-xl border-2 border-border bg-white text-sm"
                       value={newEmail}
                       onChange={(e) => setNewEmail(e.target.value)}
                       placeholder="novoemail@exemplo.com"
@@ -683,32 +690,32 @@ export default function Perfil() {
                     type="button"
                     onClick={handleEmailUpdate}
                     disabled={updatingEmail}
-                    className="w-full rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                    className="w-full rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-sm h-10"
                   >
                     {updatingEmail ? "Solicitando..." : "Trocar email"}
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-[2rem] border-4 border-border bg-white shadow-medium">
-                <CardHeader className="space-y-3 border-b-4 border-border bg-muted rounded-t-[1.7rem]">
-                  <CardTitle className="flex items-center gap-2 text-2xl font-black uppercase">
-                    <Shield className="w-5 h-5" />
+              <Card className="rounded-[1.5rem] border-4 border-border bg-white shadow-medium">
+                <CardHeader className="space-y-2 border-b-4 border-border bg-muted rounded-t-[1.2rem] pb-4">
+                  <CardTitle className="flex items-center gap-2 text-xl font-black uppercase">
+                    <Shield className="w-4 h-4" />
                     Segurança da conta
                   </CardTitle>
-                  <CardDescription className="font-semibold text-muted-foreground">
-                    Solicite um link seguro para trocar sua senha e gerencie o encerramento definitivo da conta.
+                  <CardDescription className="font-semibold text-sm text-muted-foreground">
+                    Solicite um link seguro para trocar sua senha
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="space-y-4 rounded-[1.5rem] border-2 border-border bg-white p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-full border-2 border-border bg-[#f7cf3d] p-2">
-                        <KeyRound className="h-4 w-4" />
+                <CardContent className="space-y-4 pt-4">
+                  <div className="space-y-3 rounded-[1rem] border-2 border-border bg-white p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="rounded-full border-2 border-border bg-[#f7cf3d] p-1.5">
+                        <KeyRound className="h-3 w-3" />
                       </div>
-                      <div>
-                        <p className="text-sm font-black uppercase text-foreground">Trocar senha com segurança</p>
-                        <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                      <div className="flex-1">
+                        <p className="text-xs font-black uppercase text-foreground">Trocar senha com segurança</p>
+                        <p className="mt-1 text-xs font-semibold text-muted-foreground">
                           Enviaremos um link de redefinição para o email atual da conta.
                         </p>
                       </div>
@@ -718,20 +725,20 @@ export default function Perfil() {
                       variant="outline"
                       onClick={handlePasswordReset}
                       disabled={sendingPasswordReset}
-                      className="w-full rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                      className="w-full rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-sm h-9"
                     >
                       {sendingPasswordReset ? "Enviando..." : "Enviar link para trocar senha"}
                     </Button>
                   </div>
 
-                  <div className="space-y-4 rounded-[1.5rem] border-2 border-destructive/30 bg-destructive/5 p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-full border-2 border-destructive bg-white p-2">
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                  <div className="space-y-3 rounded-[1rem] border-2 border-destructive/30 bg-destructive/5 p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="rounded-full border-2 border-destructive bg-white p-1.5">
+                        <Trash2 className="h-3 w-3 text-destructive" />
                       </div>
-                      <div>
-                        <p className="text-sm font-black uppercase text-foreground">Apagar conta</p>
-                        <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                      <div className="flex-1">
+                        <p className="text-xs font-black uppercase text-foreground">Apagar conta</p>
+                        <p className="mt-1 text-xs font-semibold text-muted-foreground">
                           Essa ação remove sua conta e você perderá todos os seus dados.
                         </p>
                       </div>
@@ -741,29 +748,27 @@ export default function Perfil() {
                       <AlertDialogTrigger asChild>
                         <Button
                           type="button"
-                          variant="outline"
-                          className="w-full rounded-full border-2 border-destructive bg-white font-black uppercase text-destructive"
+                          variant="destructive"
+                          disabled={deletingAccount}
+                          className="w-full rounded-full border-2 border-destructive bg-destructive text-destructive-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none text-sm h-9"
                         >
-                          Apagar conta
+                          {deletingAccount ? "Apagando..." : "Apagar conta"}
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent className="border-4 border-border rounded-[1.8rem] bg-white">
+                      <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle className="text-2xl font-black uppercase">Tem certeza?</AlertDialogTitle>
-                          <AlertDialogDescription className="font-semibold text-muted-foreground">
-                            Se você apagar sua conta, perderá todos os seus dados, incluindo perfil, simulados, amizades e mensagens.
+                          <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta ação não pode ser desfeita. Isso apagará permanentemente sua conta e removerá todos os seus dados.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel className="rounded-full border-2 border-border font-black uppercase">
-                            Voltar
-                          </AlertDialogCancel>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={handleDeleteAccount}
-                            className="rounded-full border-2 border-border bg-destructive text-destructive-foreground font-black uppercase"
-                            disabled={deletingAccount}
+                            className="rounded-full border-2 border-destructive bg-destructive text-destructive-foreground font-black uppercase"
                           >
-                            {deletingAccount ? "Apagando..." : "Sim, apagar conta"}
+                            Apagar
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -778,7 +783,26 @@ export default function Perfil() {
             <BillingOverview showPricing={false} />
           </TabsContent>
         </Tabs>
+
+        <div className="mt-8 text-center space-x-4">
+          <button
+            onClick={() => setTermosModalOpen(true)}
+            className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors underline"
+          >
+            Termos de Uso
+          </button>
+          <span className="text-muted-foreground">•</span>
+          <button
+            onClick={() => setPrivacidadeModalOpen(true)}
+            className="text-sm font-semibold text-muted-foreground hover:text-primary transition-colors underline"
+          >
+            Política de Privacidade
+          </button>
+        </div>
       </div>
+
+      <TermosUsoModal open={termosModalOpen} onOpenChange={setTermosModalOpen} />
+      <PoliticaPrivacidadeModal open={privacidadeModalOpen} onOpenChange={setPrivacidadeModalOpen} />
     </div>
   );
 }

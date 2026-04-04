@@ -241,8 +241,8 @@ export default function Chat() {
     if (!error && data) {
       setMessages(data);
       
-      await supabase
-        .from("mensagens")
+      const { error: markAsReadError } = await (supabase
+        .from("mensagens") as any)
         .update({ lida: true })
         .eq("destinatario_id", userId)
         .eq("remetente_id", friendId)
@@ -277,12 +277,12 @@ export default function Chat() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase
-      .from("mensagens")
+    const { error } = await (supabase
+      .from("mensagens") as any)
       .insert({
         remetente_id: user.id,
         destinatario_id: selectedFriend.id,
-        mensagem: newMessage
+        mensagem: newMessage.trim(),
       });
 
     if (error) {
@@ -304,7 +304,30 @@ export default function Chat() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const shouldDuplicate = window.confirm("Deseja adicionar este simulado à sua lista?");
+    // Calcular custo em gabaritos (2 gabaritos por questão)
+    const custoGabaritos = payload.simulado.total_questoes * 2;
+
+    // Verificar saldo de gabaritos
+    const { data: userGabaritos } = await supabase
+      .from('user_gabaritos')
+      .select('gabaritos')
+      .eq('user_id', user.id)
+      .single();
+
+    const saldoAtual = userGabaritos && typeof (userGabaritos as any).gabaritos === 'number' 
+      ? (userGabaritos as any).gabaritos 
+      : 0;
+
+    if (saldoAtual < custoGabaritos) {
+      toast.error(`Gabaritos insuficientes. Necessário: ${custoGabaritos}, Disponível: ${saldoAtual}`);
+      return;
+    }
+
+    const shouldDuplicate = window.confirm(
+      `Deseja adicionar este simulado à sua lista?\n\n` +
+      `Custo: ${custoGabaritos} Gabaritos (${payload.simulado.total_questoes} questões × 2)\n` +
+      `Saldo atual: ${saldoAtual} Gabaritos`
+    );
     if (!shouldDuplicate) {
       return;
     }
@@ -320,8 +343,8 @@ export default function Chat() {
       return;
     }
 
-    const { data: newSimulado, error: simuladoError } = await supabase
-      .from("simulados")
+    const { data: newSimulado, error: simuladoError } = await (supabase
+      .from("simulados") as any)
       .insert({
         user_id: user.id,
         titulo: payload.simulado.titulo,
@@ -339,8 +362,8 @@ export default function Chat() {
       return;
     }
 
-    const questionsToInsert = existingQuestions.map((question) => ({
-      simulado_id: newSimulado.id,
+    const questionsToInsert = (existingQuestions as any[]).map((question) => ({
+      simulado_id: (newSimulado as any).id,
       enunciado: question.enunciado,
       alternativas: question.alternativas,
       resposta_correta: question.resposta_correta,
@@ -348,8 +371,8 @@ export default function Chat() {
       ordem: question.ordem,
     }));
 
-    const { error: insertQuestionsError } = await supabase
-      .from("questoes")
+    const { error: insertQuestionsError } = await (supabase
+      .from("questoes") as any)
       .insert(questionsToInsert);
 
     if (insertQuestionsError) {
@@ -357,8 +380,21 @@ export default function Chat() {
       return;
     }
 
-    toast.success("Simulado salvo na sua lista!");
-    navigate(`/dashboard/simular/${newSimulado.id}`);
+    // Descontar gabaritos após sucesso
+    const { error: deductError } = await (supabase as any).rpc('deduct_gabaritos_manual', {
+      p_user_id: user.id,
+      p_simulado_id: (newSimulado as any).id,
+      p_total_questoes: payload.simulado.total_questoes
+    });
+
+    if (deductError) {
+      console.error('Erro ao descontar gabaritos:', deductError);
+      toast.warning('Simulado adicionado, mas houve erro ao descontar gabaritos');
+    } else {
+      toast.success(`Simulado salvo na sua lista! (${custoGabaritos} Gabaritos descontados)`);
+    }
+
+    navigate(`/dashboard/simular/${(newSimulado as any).id}`);
   };
 
   return (

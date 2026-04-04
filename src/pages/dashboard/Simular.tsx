@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { QuestionContent } from "@/components/QuestionContent";
 import { NativeBannerModal } from "@/components/ads/NativeBannerModal";
 import { useIsPremium } from "@/hooks/useIsPremium";
+import { useStudyTimer } from "@/hooks/useStudyTimer";
 
 interface Questao {
   id: string;
@@ -32,6 +33,7 @@ interface Simulado {
   status: string;
   acertos: number;
   percentual_acerto: number | null;
+  assunto_id?: string;
 }
 
 interface SimuladoBlock {
@@ -109,10 +111,49 @@ export default function Simular() {
   const [finalizando, setFinalizando] = useState(false);
   const [blocks, setBlocks] = useState<SimuladoBlock[]>([]);
   const [showAdModal, setShowAdModal] = useState(false);
+  const [userId, setUserId] = useState<string>("");
+  const [isPageActive, setIsPageActive] = useState(true);
+  const [isSimuladoAtivo, setIsSimuladoAtivo] = useState(false);
+
+  // Hook do cronômetro automático para simulados
+  const { isRunning, formattedTime } = useStudyTimer({
+    userId,
+    assuntoId: simulado?.assunto_id || "",
+    tipo: "simulado",
+    isActive: isPageActive && isSimuladoAtivo && !!simulado?.assunto_id && !!userId,
+  });
 
   useEffect(() => {
     loadSimulado();
   }, [id]);
+
+  // Detecta quando usuário sai da página (perde foco)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsPageActive(!document.hidden);
+    };
+
+    const handleBeforeUnload = () => {
+      setIsPageActive(false);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  // Ativa cronômetro quando simulado é carregado e não está finalizado
+  useEffect(() => {
+    if (simulado && !resultado && !finalizando && questoes.length > 0) {
+      setIsSimuladoAtivo(true);
+    } else {
+      setIsSimuladoAtivo(false);
+    }
+  }, [simulado, resultado, finalizando, questoes.length]);
 
   // Abrir modal de anúncio quando chegar em questões específicas
   useEffect(() => {
@@ -140,6 +181,8 @@ export default function Simular() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    setUserId(user.id);
+
     // Carregar simulado
     const { data: simData, error: simError } = await supabase
       .from("simulados")
@@ -157,7 +200,7 @@ export default function Simular() {
     setSimulado(simData);
 
     // Se já estiver concluído, mostrar resultado
-    if (simData.status === "concluido") {
+    if ((simData as any).status === "concluido") {
       calcularResultado(simData);
       setLoading(false);
       return;
@@ -189,13 +232,14 @@ export default function Simular() {
   };
 
   const salvarResposta = async (questaoId: string, resposta: string) => {
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from("questoes")
+      // @ts-ignore - Update types will be available after full type generation
       .update({ resposta_usuario: resposta })
       .eq("id", questaoId);
 
-    if (error) {
-      console.error("Erro ao salvar resposta:", error);
+    if (updateError) {
+      console.error("Erro ao salvar resposta:", updateError);
     }
   };
 
@@ -240,19 +284,27 @@ export default function Simular() {
     const percentual = Math.round((acertos / questoes.length) * 100);
 
     // Atualizar simulado
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from("simulados")
+      // @ts-ignore - Update types will be available after full type generation
       .update({
         status: "concluido",
-        acertos: acertos,
+        acertos,
         percentual_acerto: percentual,
-        finished_at: new Date().toISOString()
+        finished_at: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) {
+    if (updateError) {
       toast.error("Erro ao finalizar simulado");
     } else {
+      // Registrar simulado concluído e atualizar progresso
+      // @ts-ignore - RPC types will be available after full type generation
+      await supabase.rpc("registrar_simulado_concluido", {
+        p_user_id: user.id,
+        p_simulado_id: id,
+      });
+      
       setResultado({ acertos, percentual });
       toast.success("Simulado finalizado!");
     }
@@ -386,10 +438,10 @@ export default function Simular() {
               <Button 
                 variant="outline" 
                 className="flex-1 rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                onClick={() => navigate("/dashboard/simulados")}
+                onClick={() => navigate("/dashboard/meu-cronograma")}
               >
                 <ChevronLeft className="w-4 h-4 mr-2" />
-                Voltar aos Simulados
+                Voltar ao Cronograma
               </Button>
               <Button 
                 className="flex-1 rounded-full border-2 border-border bg-secondary text-secondary-foreground font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
@@ -405,7 +457,7 @@ export default function Simular() {
                         conteudo: `Concluí o simulado "${simulado.titulo}" em ${simulado.materia} com ${resultado.percentual}% de acerto (${resultado.acertos}/${questoes.length})!`,
                         tipo: "resultado",
                         simulado_id: simulado.id,
-                      }]);
+                      }] as any);
 
                     if (error) {
                       toast.error("Erro ao compartilhar no mural");
@@ -460,13 +512,28 @@ export default function Simular() {
             </div>
           </div>
         </div>
-        <div className="rounded-[1.5rem] border-4 border-border bg-white px-5 py-4 text-left shadow-soft md:text-right">
-          <p className="text-sm font-black uppercase text-foreground">
-            Questão {currentIndex + 1} de {questoes.length}
-          </p>
-          <p className="text-sm font-semibold text-muted-foreground">
-            {totalRespondidas} respondidas
-          </p>
+        <div className="space-y-3">
+          {/* Cronômetro Automático */}
+          <div className="rounded-[1.5rem] border-2 border-[#f7cf3d] bg-[#f7cf3d]/10 px-4 py-3 text-center shadow-soft">
+            <div className="flex items-center gap-2">
+              <Clock className={`h-4 w-4 ${isRunning ? 'text-[#f7cf3d] animate-pulse' : 'text-muted-foreground'}`} />
+              <span className="text-sm font-black text-foreground">
+                {formattedTime}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {isRunning ? 'Estudando' : 'Pausado'}
+              </span>
+            </div>
+          </div>
+          
+          <div className="rounded-[1.5rem] border-4 border-border bg-white px-5 py-4 text-left shadow-soft md:text-right">
+            <p className="text-sm font-black uppercase text-foreground">
+              Questão {currentIndex + 1} de {questoes.length}
+            </p>
+            <p className="text-sm font-semibold text-muted-foreground">
+              {totalRespondidas} respondidas
+            </p>
+          </div>
         </div>
       </div>
 

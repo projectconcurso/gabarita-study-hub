@@ -22,6 +22,10 @@ import Perfil from "./pages/dashboard/Perfil";
 import PerfilAmigo from "./pages/dashboard/PerfilAmigo";
 import Billing from "./pages/dashboard/Billing";
 import LojaGabaritos from "./pages/dashboard/LojaGabaritos";
+import MeusEstudos from "./pages/dashboard/MeusEstudos.tsx";
+import MeuCronograma from "./pages/dashboard/MeuCronograma";
+import DetalhesConcurso from "./pages/dashboard/DetalhesConcurso";
+import VisualizarApostila from "./pages/dashboard/VisualizarApostila";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +49,10 @@ const App = () => (
             <Route index element={<DashboardHome />} />
             <Route path="simulados" element={<Simulados />} />
             <Route path="simular/:id" element={<Simular />} />
+            <Route path="meus-estudos" element={<MeusEstudos />} />
+            <Route path="meu-cronograma" element={<MeuCronograma />} />
+            <Route path="meu-cronograma/:id" element={<DetalhesConcurso />} />
+            <Route path="apostila/:assuntoId" element={<VisualizarApostila />} />
             <Route path="mural" element={<Mural />} />
             <Route path="amigos" element={<Amigos />} />
             <Route path="amigos/:id" element={<PerfilAmigo />} />

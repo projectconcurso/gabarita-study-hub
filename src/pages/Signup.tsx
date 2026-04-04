@@ -9,13 +9,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { FocaLogo } from "@/components/FocaMascot";
+import { TermosUsoModal } from "@/components/TermosUsoModal";
+import { PoliticaPrivacidadeModal } from "@/components/PoliticaPrivacidadeModal";
 
 const signupSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   sobrenome: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres"),
+  aceitouTermos: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar os Termos de Uso para continuar",
+  }),
+  aceitouPrivacidade: z.boolean().refine((val) => val === true, {
+    message: "Você deve aceitar a Política de Privacidade para continuar",
+  }),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -23,6 +32,8 @@ type SignupFormData = z.infer<typeof signupSchema>;
 export default function Signup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [termosModalOpen, setTermosModalOpen] = useState(false);
+  const [privacidadeModalOpen, setPrivacidadeModalOpen] = useState(false);
 
   const signupForm = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -31,6 +42,8 @@ export default function Signup() {
       sobrenome: "",
       email: "",
       password: "",
+      aceitouTermos: false,
+      aceitouPrivacidade: false,
     },
   });
 
@@ -178,6 +191,63 @@ export default function Signup() {
                     </FormItem>
                   )}
                 />
+                
+                <FormField
+                  control={signupForm.control}
+                  name="aceitouTermos"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border-2 border-border bg-muted p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-semibold">
+                          Li e aceito os{" "}
+                          <button
+                            type="button"
+                            onClick={() => setTermosModalOpen(true)}
+                            className="text-primary hover:underline font-black"
+                          >
+                            Termos de Uso
+                          </button>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={signupForm.control}
+                  name="aceitouPrivacidade"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-2xl border-2 border-border bg-muted p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-semibold">
+                          Li e aceito a{" "}
+                          <button
+                            type="button"
+                            onClick={() => setPrivacidadeModalOpen(true)}
+                            className="text-primary hover:underline font-black"
+                          >
+                            Política de Privacidade
+                          </button>
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
                 <Button type="submit" className="h-auto min-h-12 w-full whitespace-normal rounded-full border-2 border-border bg-accent px-4 py-3 text-center font-black uppercase leading-tight text-accent-foreground shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" disabled={loading}>
                   {loading ? "Criando conta..." : "Criar conta e escolher plano"}
                 </Button>
@@ -197,6 +267,9 @@ export default function Signup() {
           </CardContent>
         </Card>
       </div>
+      
+      <TermosUsoModal open={termosModalOpen} onOpenChange={setTermosModalOpen} />
+      <PoliticaPrivacidadeModal open={privacidadeModalOpen} onOpenChange={setPrivacidadeModalOpen} />
     </div>
   );
 }

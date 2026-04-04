@@ -506,13 +506,36 @@ Retorne APENAS um JSON válido no formato:
     console.log('Primeira validada:', JSON.stringify(questoesValidadas[0], null, 2));
 
     // Inserir questões no banco
-    const { error } = await supabaseClient
+    const { error: questoesError } = await supabaseClient
       .from('questoes')
       .insert(questoesValidadas);
 
-    if (error) {
-      console.error('Erro ao inserir no banco:', error);
-      throw error;
+    if (questoesError) {
+      console.error('Erro ao inserir questões no banco:', questoesError);
+      
+      // ROLLBACK: Deletar simulado vazio se falhou ao inserir questões
+      await supabaseClient
+        .from('simulados')
+        .delete()
+        .eq('id', simuladoId);
+      
+      throw questoesError;
+    }
+
+    // SUCESSO: Agora sim, descontar gabaritos do usuário
+    console.log('Questões inseridas com sucesso. Descontando gabaritos...');
+    const { error: deductError } = await supabaseClient.rpc('deduct_gabaritos_manual', {
+      p_user_id: userId,
+      p_simulado_id: simuladoId,
+      p_total_questoes: numQuestoes
+    });
+
+    if (deductError) {
+      console.error('Erro ao descontar gabaritos:', deductError);
+      // Não fazer rollback aqui pois as questões já foram criadas com sucesso
+      // O simulado está funcional, apenas logamos o erro
+    } else {
+      console.log('Gabaritos descontados com sucesso!');
     }
 
     return new Response(
@@ -521,7 +544,30 @@ Retorne APENAS um JSON válido no formato:
     );
 
   } catch (error) {
-    console.error('Erro:', error);
+    console.error('Erro na geração do simulado:', error);
+    
+    // Tentar fazer rollback do simulado se algo deu errado
+    try {
+      const body = await req.clone().json();
+      const { simuladoId } = body;
+      
+      if (simuladoId) {
+        console.log('Fazendo rollback do simulado:', simuladoId);
+        const supabaseUrl = Deno.env.get('SUPABASE_URL');
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+        const supabaseClient = createClient(supabaseUrl ?? '', supabaseServiceKey ?? '');
+        
+        await supabaseClient
+          .from('simulados')
+          .delete()
+          .eq('id', simuladoId);
+        
+        console.log('Rollback concluído - simulado deletado');
+      }
+    } catch (rollbackError) {
+      console.error('Erro ao fazer rollback:', rollbackError);
+    }
+    
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Erro desconhecido' }),
       { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

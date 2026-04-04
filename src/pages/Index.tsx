@@ -1,13 +1,19 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Users, TrendingUp, Target, MessageCircle, Award, Sparkles, Brain } from "lucide-react";
 import { FocaLogo } from "@/components/FocaMascot";
+import { TermosUsoModal } from "@/components/TermosUsoModal";
+import { PoliticaPrivacidadeModal } from "@/components/PoliticaPrivacidadeModal";
 import featureAi from "@/assets/feature-ai.png";
 import featureSocial from "@/assets/feature-social.png";
 import featureProgress from "@/assets/feature-progress.png";
 
 const Index = () => {
+  const [termosModalOpen, setTermosModalOpen] = useState(false);
+  const [privacidadeModalOpen, setPrivacidadeModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -343,6 +349,22 @@ const Index = () => {
                 <li><a href="#" className="hover:text-foreground transition-colors">Central de Ajuda</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Contato</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
+                <li>
+                  <button
+                    onClick={() => setTermosModalOpen(true)}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Termos de Uso
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setPrivacidadeModalOpen(true)}
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Política de Privacidade
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -351,6 +373,9 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      <TermosUsoModal open={termosModalOpen} onOpenChange={setTermosModalOpen} />
+      <PoliticaPrivacidadeModal open={privacidadeModalOpen} onOpenChange={setPrivacidadeModalOpen} />
     </div>
   );
 };

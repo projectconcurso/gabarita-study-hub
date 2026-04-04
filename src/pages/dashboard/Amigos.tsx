@@ -58,14 +58,14 @@ const fetchProfilesMap = async (profileIds: string[]) => {
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, nome, sobrenome, foto_url, cargo_desejado")
+    .select("id, nome, sobrenome, foto_url, cargo_desejado, cidade, estado")
     .in("id", profileIds);
 
   if (error) {
     throw error;
   }
 
-  return new Map((data ?? []).map((profile) => [profile.id, profile]));
+  return new Map((data ?? []).map((profile: any) => [profile.id, profile]));
 };
 
 const getProfileDisplayEmail = (profile: Profile) => profile.email ?? "";
@@ -246,8 +246,8 @@ export default function Amigos() {
 
     const normalizedFullSearch = normalizeSearchValue(normalizedSearch);
     const availableUsers = (data ?? [])
-      .filter((profile) => !relatedUserIds.has(profile.id))
-      .filter((profile) => {
+      .filter((profile: any) => !relatedUserIds.has(profile.id))
+      .filter((profile: any) => {
         const searchableText = normalizeSearchValue(
           [profile.nome, profile.sobrenome, profile.cidade ?? "", profile.estado ?? ""].join(" ")
         );
@@ -297,8 +297,8 @@ export default function Amigos() {
     );
 
     if (reversePendingRequest) {
-      const { error: acceptError } = await supabase
-        .from("amizades")
+      const { error: acceptError } = await (supabase
+        .from("amizades") as any)
         .update({ status: "aceito" })
         .eq("id", reversePendingRequest.id);
 
@@ -325,8 +325,8 @@ export default function Amigos() {
       return;
     }
 
-    const { error } = await supabase
-      .from("amizades")
+    const { error } = await (supabase
+      .from("amizades") as any)
       .insert({
         user_id: user.id,
         amigo_id: amigoId,
@@ -345,8 +345,8 @@ export default function Amigos() {
   };
 
   const acceptRequest = async (requestId: string) => {
-    const { error } = await supabase
-      .from("amizades")
+    const { error } = await (supabase
+      .from("amizades") as any)
       .update({ status: "aceito" })
       .eq("id", requestId);
 
@@ -360,8 +360,8 @@ export default function Amigos() {
   };
 
   const rejectRequest = async (requestId: string) => {
-    const { error } = await supabase
-      .from("amizades")
+    const { error } = await (supabase
+      .from("amizades") as any)
       .update({ status: "rejeitado" })
       .eq("id", requestId);
 
@@ -428,7 +428,10 @@ export default function Amigos() {
               placeholder="Buscar por nome, sobrenome, cidade ou estado..."
               className="h-12 rounded-2xl border-2 border-border bg-white px-4"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                void searchUsers();
+              }}
               onKeyDown={(e) => e.key === 'Enter' && void searchUsers()}
             />
             <Button onClick={() => void searchUsers()} className="h-12 rounded-full border-2 border-border bg-primary text-primary-foreground font-black uppercase shadow-soft sm:w-auto hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
@@ -455,8 +458,10 @@ export default function Amigos() {
                       >
                         {profile.nome} {profile.sobrenome}
                       </button>
-                      {profile.cargo_desejado && (
-                        <p className="text-sm font-semibold text-muted-foreground">{profile.cargo_desejado}</p>
+                      {(profile.cidade || profile.estado) && (
+                        <p className="text-sm font-semibold text-muted-foreground">
+                          {[profile.cidade, profile.estado].filter(Boolean).join(", ")}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -508,8 +513,10 @@ export default function Amigos() {
                     >
                       {request.profile.nome} {request.profile.sobrenome}
                     </button>
-                    {request.profile.cargo_desejado && (
-                      <p className="text-sm font-semibold text-muted-foreground">{request.profile.cargo_desejado}</p>
+                    {(request.profile.cidade || request.profile.estado) && (
+                      <p className="text-sm font-semibold text-muted-foreground">
+                        {[request.profile.cidade, request.profile.estado].filter(Boolean).join(", ")}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -574,11 +581,10 @@ export default function Amigos() {
                         >
                           {profile.nome} {profile.sobrenome}
                         </button>
-                        {profile.cargo_desejado && (
-                          <p className="text-sm font-semibold text-muted-foreground">{profile.cargo_desejado}</p>
-                        )}
-                        {getProfileDisplayEmail(profile) && (
-                          <p className="truncate text-sm font-semibold text-muted-foreground">{getProfileDisplayEmail(profile)}</p>
+                        {(profile.cidade || profile.estado) && (
+                          <p className="text-sm font-semibold text-muted-foreground">
+                            {[profile.cidade, profile.estado].filter(Boolean).join(", ")}
+                          </p>
                         )}
                       </div>
                     </div>

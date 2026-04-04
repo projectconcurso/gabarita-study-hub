@@ -141,23 +141,71 @@ export default function Simulados() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [gabaritosBalance, setGabaritosBalance] = useState(0);
   const [insufficientBalanceOpen, setInsufficientBalanceOpen] = useState(false);
+  const [contexto, setContexto] = useState<{
+    concursoId: string;
+    materiaId: string;
+    assuntoId: string;
+    materiaNome: string;
+    assuntoNome: string;
+    escolaridade: string;
+  } | null>(null);
   const [formData, setFormData] = useState({
     titulo: "",
     escolaridade: "",
     dificuldade: "",
     banca: "",
+    quantidade: "10",
     topicGroups: [createEmptyTopicGroup()],
   });
 
-  const totalQuestoes = formData.topicGroups.reduce((total, group) => {
-    const quantidade = Number.parseInt(group.quantidade, 10);
-    return total + (Number.isNaN(quantidade) ? 0 : quantidade);
-  }, 0);
+  const totalQuestoes = contexto 
+    ? (Number.parseInt(formData.quantidade, 10) || 10)
+    : formData.topicGroups.reduce((total, group) => {
+        const quantidade = Number.parseInt(group.quantidade, 10);
+        return total + (Number.isNaN(quantidade) ? 0 : quantidade);
+      }, 0);
 
   useEffect(() => {
-    loadSimulados();
+    // Captura contexto da URL
+    const params = new URLSearchParams(window.location.search);
+    const concursoId = params.get('concurso_id');
+    const materiaId = params.get('materia_id');
+    const assuntoId = params.get('assunto_id');
+    const escolaridade = params.get('escolaridade');
+    const materiaNome = params.get('materia_nome');
+    const assuntoNome = params.get('assunto_nome');
+
+    console.log('📍 Parâmetros da URL:', {
+      concursoId,
+      materiaId,
+      assuntoId,
+      escolaridade,
+      materiaNome,
+      assuntoNome
+    });
+
+    if (concursoId && materiaId && assuntoId && escolaridade && materiaNome && assuntoNome) {
+      console.log('✅ Contexto capturado, definindo estado...');
+      setContexto({
+        concursoId,
+        materiaId,
+        assuntoId,
+        materiaNome,
+        assuntoNome,
+        escolaridade,
+      });
+      setDialogOpen(true);
+    } else {
+      console.log('ℹ️ Sem contexto na URL');
+    }
+
     loadGabaritosBalance();
   }, []);
+
+  // Recarrega simulados quando o contexto mudar
+  useEffect(() => {
+    void loadSimulados();
+  }, [contexto]);
 
   useEffect(() => {
     void loadFriends();
@@ -179,7 +227,7 @@ export default function Simulados() {
         return;
       }
 
-      setGabaritosBalance(data.gabaritos ?? 0);
+      setGabaritosBalance((data as any).gabaritos ?? 0);
     } catch (error) {
       console.error('Erro ao carregar saldo:', error);
       setGabaritosBalance(0);
@@ -263,7 +311,7 @@ export default function Simulados() {
           conteudo: message,
           tipo: shareMode,
           simulado_id: shareSimulado.id,
-        });
+        } as any);
 
       if (error) {
         setShareLoading(false);
@@ -282,7 +330,7 @@ export default function Simulados() {
           remetente_id: user.id,
           destinatario_id: shareFriendId,
           mensagem: chatMessage,
-        });
+        } as any);
 
       if (error) {
         setShareLoading(false);
@@ -352,15 +400,37 @@ export default function Simulados() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("simulados")
       .select("id, titulo, tema, materia, status, total_questoes, acertos, percentual_acerto, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+      .eq("user_id", user.id);
+
+    // Filtra por contexto se disponível
+    if (contexto) {
+      console.log('🔍 Filtrando simulados com contexto:', {
+        materiaNome: contexto.materiaNome,
+        assuntoNome: contexto.assuntoNome
+      });
+      query = query
+        .eq("materia", contexto.materiaNome)
+        .eq("tema", contexto.assuntoNome)
+        .eq("contexto", "cronograma");
+    } else {
+      console.log('ℹ️ Carregando apenas simulados livres');
+      // Filtra apenas simulados livres (sem vínculo com cronograma)
+      query = query.eq("contexto", "livre");
+    }
+
+    const { data, error } = await query.order("created_at", { ascending: false });
 
     if (error) {
       toast.error("Erro ao carregar simulados");
+      console.error('❌ Erro ao carregar simulados:', error);
     } else {
+      console.log('✅ Simulados carregados:', data?.length || 0);
+      if (data && data.length > 0) {
+        console.log('📋 Primeiro simulado:', data[0]);
+      }
       setSimulados(data || []);
     }
   };
@@ -393,21 +463,33 @@ export default function Simulados() {
   };
 
   const createSimulado = async () => {
-    const validTopicGroups = formData.topicGroups.filter(
-      (group) =>
-        group.tema.trim() &&
-        group.materia.trim() &&
-        Number.parseInt(group.quantidade, 10) > 0
-    );
+    // Validação diferente se há contexto
+    if (contexto) {
+      if (!formData.dificuldade) {
+        toast.error("Selecione a dificuldade");
+        return;
+      }
+      if (totalQuestoes < 5 || totalQuestoes > 20) {
+        toast.error("O número de questões deve ficar entre 5 e 20");
+        return;
+      }
+    } else {
+      const validTopicGroups = formData.topicGroups.filter(
+        (group) =>
+          group.tema.trim() &&
+          group.materia.trim() &&
+          Number.parseInt(group.quantidade, 10) > 0
+      );
 
-    if (!formData.titulo || !formData.escolaridade || !formData.dificuldade || validTopicGroups.length === 0) {
-      toast.error("Preencha todos os campos obrigatórios");
-      return;
-    }
+      if (!formData.titulo || !formData.escolaridade || !formData.dificuldade || validTopicGroups.length === 0) {
+        toast.error("Preencha todos os campos obrigatórios");
+        return;
+      }
 
-    if (validTopicGroups.length !== formData.topicGroups.length) {
-      toast.error("Preencha corretamente todos os blocos de assunto, matéria e quantidade");
-      return;
+      if (validTopicGroups.length !== formData.topicGroups.length) {
+        toast.error("Preencha corretamente todos os blocos de assunto, matéria e quantidade");
+        return;
+      }
     }
 
     if (totalQuestoes < 5 || totalQuestoes > 20) {
@@ -433,37 +515,69 @@ export default function Simulados() {
       
       // Criar o simulado
       setGenerationStage("Montando a estrutura do simulado...");
+      
+      // Dados do simulado baseados no contexto ou formulário
+      const titulo = contexto 
+        ? `Simulado - ${contexto.assuntoNome}`
+        : formData.titulo;
+      const tema = contexto 
+        ? contexto.assuntoNome
+        : (formData.topicGroups.filter(g => g.tema.trim()).map((group) => group.tema.trim()).join(" • "));
+      const materia = contexto 
+        ? contexto.materiaNome
+        : (formData.topicGroups.filter(g => g.materia.trim()).map((group) => group.materia.trim()).join(" • "));
+      const escolaridade = contexto 
+        ? contexto.escolaridade
+        : formData.escolaridade;
+      
       const { data: simulado, error: simuladoError } = await supabase
         .from("simulados")
         .insert({
           user_id: user.id,
-          titulo: formData.titulo,
-          tema: validTopicGroups.map((group) => group.tema.trim()).join(" • "),
-          materia: validTopicGroups.map((group) => group.materia.trim()).join(" • "),
+          titulo,
+          tema,
+          materia,
           total_questoes: totalQuestoes,
-          status: "em_andamento"
-        })
+          status: "em_andamento",
+          assunto_id: contexto?.assuntoId || null,
+          contexto: contexto ? "cronograma" : "livre"
+        } as any)
         .select("id, titulo, tema, materia, status, total_questoes, acertos, percentual_acerto, created_at")
         .single();
 
-      if (simuladoError) throw simuladoError;
+      if (simuladoError || !simulado) throw simuladoError || new Error('Erro ao criar simulado');
 
       // Chamar edge function para gerar questões
       setDialogOpen(false);
       setGenerationStage("Gerando questões com IA...");
-      const { data: questoesData, error: questoesError } = await supabase.functions.invoke("gerar-questoes", {
-        body: {
-          simuladoId: simulado.id,
-          titulo: formData.titulo,
-          escolaridade: formData.escolaridade,
-          dificuldade: formData.dificuldade,
-          banca: formData.banca,
-          numQuestoes: totalQuestoes,
-          topicGroups: validTopicGroups.map((group) => ({
+      
+      // TopicGroups baseados no contexto ou formulário
+      const topicGroups = contexto 
+        ? [{
+            tema: contexto.assuntoNome,
+            materia: contexto.materiaNome,
+            quantidade: totalQuestoes,
+          }]
+        : formData.topicGroups.filter(
+            (group) =>
+              group.tema.trim() &&
+              group.materia.trim() &&
+              Number.parseInt(group.quantidade, 10) > 0
+          ).map((group) => ({
             tema: group.tema.trim(),
             materia: group.materia.trim(),
             quantidade: Number.parseInt(group.quantidade, 10),
-          })),
+          }));
+      
+      const { data: questoesData, error: questoesError } = await supabase.functions.invoke("gerar-questoes", {
+        body: {
+          simuladoId: (simulado as any).id,
+          titulo,
+          escolaridade,
+          dificuldade: formData.dificuldade,
+          banca: formData.banca,
+          numQuestoes: totalQuestoes,
+          topicGroups,
           userId: user.id
         }
       });
@@ -476,9 +590,10 @@ export default function Simulados() {
         escolaridade: "",
         dificuldade: "",
         banca: "",
+        quantidade: "10",
         topicGroups: [createEmptyTopicGroup()],
       });
-      navigate(`/dashboard/simular/${simulado.id}`);
+      navigate(`/dashboard/simular/${(simulado as any).id}`);
     } catch (error) {
       console.error(error);
       toast.error("Erro ao criar simulado");
@@ -521,9 +636,14 @@ export default function Simulados() {
           <div className="inline-flex rounded-full border-2 border-border bg-[#f7cf3d] px-4 py-2 text-xs font-black uppercase tracking-wide text-foreground shadow-soft">
             Biblioteca de prática
           </div>
-          <h1 className="text-4xl font-black uppercase">Simulados</h1>
+          <h1 className="text-4xl font-black uppercase">
+            {contexto ? `Simulados - ${contexto.materiaNome}` : "Simulados"}
+          </h1>
           <p className="text-lg font-semibold text-muted-foreground">
-            Pratique com questões geradas por IA
+            {contexto 
+              ? `Assunto: ${contexto.assuntoNome}`
+              : "Pratique com questões geradas por IA"
+            }
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -541,47 +661,70 @@ export default function Simulados() {
               </DialogDescription>
             </DialogHeader>
             <div className="flex-1 space-y-4 overflow-y-auto py-4 pr-1">
+              {contexto && (
+                <div className="space-y-3 rounded-[1.5rem] border-2 border-[#f7cf3d] bg-[#f7cf3d]/10 p-4">
+                  <h3 className="text-sm font-black uppercase text-foreground">Contexto do Simulado</h3>
+                  <div className="grid grid-cols-3 gap-3 text-sm">
+                    <div>
+                      <span className="font-bold text-muted-foreground">Matéria:</span>
+                      <p className="font-semibold">{contexto.materiaNome}</p>
+                    </div>
+                    <div>
+                      <span className="font-bold text-muted-foreground">Assunto:</span>
+                      <p className="font-semibold">{contexto.assuntoNome}</p>
+                    </div>
+                    <div>
+                      <span className="font-bold text-muted-foreground">Escolaridade:</span>
+                      <p className="font-semibold capitalize">{contexto.escolaridade}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!contexto && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="titulo">Título do Simulado</Label>
+                    <Input
+                      id="titulo"
+                      placeholder="Ex: Simulado ENEM 2024"
+                      className="h-12 rounded-2xl border-2 border-border bg-white"
+                      value={formData.titulo}
+                      onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Escolaridade</Label>
+                    <Select value={formData.escolaridade} onValueChange={(value) => setFormData({ ...formData, escolaridade: value })}>
+                      <SelectTrigger className="h-12 rounded-2xl border-2 border-border bg-white">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ESCOLARIDADES.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="titulo">Título do Simulado</Label>
-                <Input
-                  id="titulo"
-                  placeholder="Ex: Simulado ENEM 2024"
-                  className="h-12 rounded-2xl border-2 border-border bg-white"
-                  value={formData.titulo}
-                  onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-                />
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Escolaridade</Label>
-                  <Select value={formData.escolaridade} onValueChange={(value) => setFormData({ ...formData, escolaridade: value })}>
-                    <SelectTrigger className="h-12 rounded-2xl border-2 border-border bg-white">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ESCOLARIDADES.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Nível de dificuldade</Label>
-                  <Select value={formData.dificuldade} onValueChange={(value) => setFormData({ ...formData, dificuldade: value })}>
-                    <SelectTrigger className="h-12 rounded-2xl border-2 border-border bg-white">
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DIFICULDADES.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Label>Nível de dificuldade *</Label>
+                <Select value={formData.dificuldade} onValueChange={(value) => setFormData({ ...formData, dificuldade: value })}>
+                  <SelectTrigger className="h-12 rounded-2xl border-2 border-border bg-white">
+                    <SelectValue placeholder="Selecione a dificuldade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DIFICULDADES.map((item) => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>Estilo da prova (opcional)</Label>
@@ -599,25 +742,50 @@ export default function Simulados() {
                 </Select>
               </div>
               <div className="space-y-3 rounded-[1.5rem] border-2 border-border bg-muted p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <Label>Distribuição das questões por assunto e matéria</Label>
-                    <p className="text-sm font-semibold text-muted-foreground">
-                      Adicione um ou mais blocos e defina quantas questões cada um deve ter.
-                    </p>
+                {contexto ? (
+                  // Versão simplificada - apenas quantidade
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Número de Questões *</Label>
+                      <p className="text-sm font-semibold text-muted-foreground">
+                        Escolha entre 5 e 20 questões para este simulado.
+                      </p>
+                    </div>
+                    <Input
+                      type="number"
+                      min="5"
+                      max="20"
+                      placeholder="10"
+                      className="h-12 rounded-2xl border-2 border-border bg-white"
+                      value={formData.quantidade}
+                      onChange={(e) => setFormData({ ...formData, quantidade: e.target.value })}
+                    />
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addTopicGroup}
-                    className="rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Adicionar bloco
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {formData.topicGroups.map((group, index) => (
+                ) : (
+                  // Versão completa - com blocos
+                  <>
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <Label>Distribuição das questões por assunto e matéria</Label>
+                        <p className="text-sm font-semibold text-muted-foreground">
+                          Adicione um ou mais blocos e defina quantas questões cada um deve ter.
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addTopicGroup}
+                        className="rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Adicionar bloco
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {!contexto && (
+                  <div className="space-y-3">
+                    {formData.topicGroups.map((group, index) => (
                     <div key={group.id} className="rounded-[1.25rem] border-2 border-border bg-white p-4">
                       <div className="mb-3 flex items-center justify-between gap-3">
                         <p className="text-sm font-black uppercase">Bloco {index + 1}</p>
@@ -668,7 +836,8 @@ export default function Simulados() {
                       </div>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <div className="rounded-[1rem] border-2 border-border bg-[#f7cf3d] px-4 py-3 text-sm font-black uppercase text-foreground">
                     Total de questões: {totalQuestoes}
