@@ -644,18 +644,18 @@ export default function Mural() {
                     variant="ghost"
                     size="sm"
                     onClick={() => void reactToPost(post)}
-                    className="rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                    className="rounded-full border-2 border-border bg-white font-black uppercase text-foreground shadow-soft hover:bg-muted hover:text-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                   >
-                    <Heart className="mr-2 h-4 w-4" />
+                    <Heart className="mr-2 h-4 w-4 text-foreground" />
                     {post.liked_by_current_user ? "Descurtir" : "Curtir"} ({post.reacoes_count})
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setExpandedComments((current) => ({ ...current, [post.id]: !current[post.id] }))}
-                    className="rounded-full border-2 border-border bg-white font-black uppercase shadow-soft hover:bg-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                    className="rounded-full border-2 border-border bg-white font-black uppercase text-foreground shadow-soft hover:bg-muted hover:text-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
                   >
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <MessageCircle className="mr-2 h-4 w-4 text-foreground" />
                     Comentários ({post.comentarios_count})
                   </Button>
                 </div>

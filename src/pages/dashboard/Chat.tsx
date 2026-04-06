@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -55,6 +55,11 @@ interface Message {
   lida: boolean;
 }
 
+interface FriendWithLastMessage extends Friend {
+  lastMessageTime?: string;
+  lastMessagePreview?: string;
+}
+
 interface SharedSimuladoMessagePayload {
   type: "shared_simulado";
   shareMode: "simulado" | "resultado";
@@ -84,12 +89,13 @@ const parseSharedSimuladoMessage = (message: string): SharedSimuladoMessagePaylo
 export default function Chat() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friends, setFriends] = useState<FriendWithLastMessage[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [currentUserId, setCurrentUserId] = useState("");
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+  const [showChat, setShowChat] = useState(false);
 
   useEffect(() => {
     loadCurrentUser();
@@ -206,7 +212,33 @@ export default function Chat() {
         .map((friendId) => friendsMap.get(friendId) ?? null)
         .filter((friend): friend is Friend => Boolean(friend)));
 
-      setFriends(friendsList);
+      // Buscar última mensagem de cada amigo
+      const friendsWithLastMessage: FriendWithLastMessage[] = await Promise.all(
+        friendsList.map(async (friend) => {
+          const { data: lastMsg } = await supabase
+            .from("mensagens")
+            .select("mensagem, created_at")
+            .or(`and(remetente_id.eq.${userId},destinatario_id.eq.${friend.id}),and(remetente_id.eq.${friend.id},destinatario_id.eq.${userId})`)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .single();
+
+          return {
+            ...friend,
+            lastMessageTime: lastMsg ? (lastMsg as any).created_at : undefined,
+            lastMessagePreview: lastMsg ? (lastMsg as any).mensagem : undefined,
+          };
+        })
+      );
+
+      // Ordenar por mensagem mais recente
+      const sortedFriends = friendsWithLastMessage.sort((a, b) => {
+        if (!a.lastMessageTime) return 1;
+        if (!b.lastMessageTime) return -1;
+        return new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime();
+      });
+
+      setFriends(sortedFriends);
 
       const friendFromQuery = searchParams.get("friend");
       if (friendFromQuery) {
@@ -296,6 +328,28 @@ export default function Chat() {
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Hoje';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Ontem';
+    } else {
+      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+  };
+
+  const shouldShowDateSeparator = (currentMsg: Message, prevMsg: Message | undefined) => {
+    if (!prevMsg) return true;
+    const currentDate = new Date(currentMsg.created_at).toDateString();
+    const prevDate = new Date(prevMsg.created_at).toDateString();
+    return currentDate !== prevDate;
   };
 
   const selectedFriendUnreadCount = selectedFriend ? unreadCounts[selectedFriend.id] ?? 0 : 0;
@@ -397,6 +451,15 @@ export default function Chat() {
     navigate(`/dashboard/simular/${(newSimulado as any).id}`);
   };
 
+  const handleSelectFriend = (friend: Friend) => {
+    setSelectedFriend(friend);
+    setShowChat(true);
+  };
+
+  const handleBackToContacts = () => {
+    setShowChat(false);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
@@ -409,60 +472,65 @@ export default function Chat() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-        <Card className="overflow-hidden rounded-[2rem] border-4 border-border bg-white shadow-medium xl:col-span-1 xl:h-[calc(100svh-15rem)]">
-          <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
-            <CardTitle className="flex items-center gap-2 text-xl font-black uppercase md:text-2xl">
-              <MessageCircle className="w-5 h-5" />
-              Conversas
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 xl:h-[calc(100%-5.5rem)]">
-            <ScrollArea className="h-[280px] xl:h-full">
-              {friends.length === 0 ? (
-                <p className="text-muted-foreground text-center p-4 font-semibold">
-                  Nenhum amigo ainda
-                </p>
-              ) : (
-                friends.map((friend) => (
-                  <button
-                    key={friend.id}
-                    onClick={() => setSelectedFriend(friend)}
-                    className={`w-full p-4 flex items-center gap-3 transition-all border-b-2 border-border ${
-                      selectedFriend?.id === friend.id ? 'bg-secondary/30' : 'bg-white hover:bg-muted/50'
-                    }`}
-                  >
-                    <Avatar className="border-2 border-border">
-                      <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
-                        {friend.nome[0]}{friend.sobrenome[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1 text-left">
-                      <p className="font-black uppercase">{friend.nome} {friend.sobrenome}</p>
-                    </div>
-                    {(unreadCounts[friend.id] ?? 0) > 0 && (
-                      <span className="inline-flex min-w-7 items-center justify-center rounded-full border-2 border-border bg-primary px-2 py-1 text-xs font-black text-primary-foreground shadow-soft">
-                        {unreadCounts[friend.id]}
-                      </span>
-                    )}
-                  </button>
-                ))
-              )}
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden rounded-[2rem] border-4 border-border bg-white shadow-medium xl:col-span-2 xl:h-[calc(100svh-15rem)]">
-          {selectedFriend ? (
+      <Card className="overflow-hidden rounded-[2rem] border-4 border-border bg-white shadow-medium h-[calc(100svh-15rem)]">
+        {!showChat ? (
+          <>
+            <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
+              <CardTitle className="flex items-center gap-2 text-xl font-black uppercase md:text-2xl">
+                <MessageCircle className="w-5 h-5" />
+                Conversas
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 h-[calc(100%-5.5rem)]">
+              <ScrollArea className="h-full">
+                {friends.length === 0 ? (
+                  <p className="text-muted-foreground text-center p-4 font-semibold">
+                    Nenhum amigo ainda
+                  </p>
+                ) : (
+                  friends.map((friend) => (
+                    <button
+                      key={friend.id}
+                      onClick={() => handleSelectFriend(friend)}
+                      className="w-full p-4 flex items-center gap-3 transition-all border-b-2 border-border bg-white hover:bg-muted/50"
+                    >
+                      <Avatar className="border-2 border-border">
+                        <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
+                          {friend.nome[0]}{friend.sobrenome[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1 text-left">
+                        <p className="font-black uppercase">{friend.nome} {friend.sobrenome}</p>
+                      </div>
+                      {(unreadCounts[friend.id] ?? 0) > 0 && (
+                        <span className="inline-flex min-w-7 items-center justify-center rounded-full border-2 border-border bg-primary px-2 py-1 text-xs font-black text-primary-foreground shadow-soft">
+                          {unreadCounts[friend.id]}
+                        </span>
+                      )}
+                    </button>
+                  ))
+                )}
+              </ScrollArea>
+            </CardContent>
+          </>
+        ) : selectedFriend ? (
             <>
               <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
                 <div className="flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleBackToContacts}
+                    className="h-10 w-10 shrink-0 rounded-full border-2 border-border bg-white text-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-5 w-5 text-foreground" />
+                  </Button>
                   <Avatar className="border-2 border-border">
                     <AvatarFallback className="bg-accent font-black text-accent-foreground">
                       {selectedFriend.nome[0]}{selectedFriend.sobrenome[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-black uppercase">{selectedFriend.nome} {selectedFriend.sobrenome}</p>
                   </div>
                   {selectedFriendUnreadCount > 0 && (
@@ -472,17 +540,27 @@ export default function Chat() {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-col p-0 xl:h-[calc(100%-5.5rem)]">
-                <ScrollArea className="h-[320px] p-4 md:h-[400px] xl:h-full">
+              <CardContent className="flex flex-col p-0 h-[calc(100%-5.5rem)]">
+                <ScrollArea className="h-full p-4">
                   <div className="space-y-4">
-                    {messages.map((msg) => {
+                    {messages.map((msg, index) => {
+                      const prevMsg = index > 0 ? messages[index - 1] : undefined;
+                      const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
                       const isFromMe = msg.remetente_id === currentUserId;
                       const sharedSimuladoPayload = parseSharedSimuladoMessage(msg.mensagem);
                       return (
-                        <div
-                          key={msg.id}
-                          className={`flex ${isFromMe ? 'justify-end' : 'justify-start'}`}
-                        >
+                        <>
+                          {showDateSeparator && (
+                            <div className="flex justify-center my-4">
+                              <span className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                                {formatDate(msg.created_at)}
+                              </span>
+                            </div>
+                          )}
+                          <div
+                            key={msg.id}
+                            className={`flex ${isFromMe ? 'justify-end' : 'justify-start'}`}
+                          >
                           <div
                             className={`max-w-[85%] rounded-[1.2rem] border-2 border-border p-3 font-semibold shadow-soft md:max-w-[70%] ${
                               isFromMe
@@ -529,7 +607,8 @@ export default function Chat() {
                               {formatTime(msg.created_at)}
                             </p>
                           </div>
-                        </div>
+                          </div>
+                        </>
                       );
                     })}
                   </div>
@@ -551,15 +630,14 @@ export default function Chat() {
               </CardContent>
             </>
           ) : (
-            <CardContent className="flex h-[280px] flex-col items-center justify-center xl:h-[calc(100svh-15rem)]">
+            <CardContent className="flex h-full flex-col items-center justify-center">
               <MessageCircle className="w-16 h-16 text-muted-foreground mb-4" />
               <p className="text-muted-foreground font-semibold">
                 Selecione um amigo para conversar
               </p>
             </CardContent>
           )}
-        </Card>
-      </div>
+      </Card>
     </div>
   );
 }
