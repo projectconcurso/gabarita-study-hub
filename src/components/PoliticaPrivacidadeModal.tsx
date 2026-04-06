@@ -15,17 +15,17 @@ interface PoliticaPrivacidadeModalProps {
 export function PoliticaPrivacidadeModal({ open, onOpenChange }: PoliticaPrivacidadeModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh]">
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-black uppercase">
+          <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-black uppercase">
             Política de Privacidade – Plataforma Gabarit
           </DialogTitle>
-          <DialogDescription className="font-semibold">
+          <DialogDescription className="text-xs sm:text-sm font-semibold">
             Em conformidade com a Lei Geral de Proteção de Dados Pessoais (LGPD – Lei nº 13.709/2018)<br />
             Última atualização: 04 de abril de 2026
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[calc(90vh-8rem)] pr-4">
+        <ScrollArea className="h-[calc(85vh-10rem)] sm:h-[calc(90vh-8rem)] pr-2 sm:pr-4">
           <div className="space-y-6 text-sm">
             <section>
               <h3 className="text-lg font-black uppercase mb-2">1. Controlador dos Dados</h3>
