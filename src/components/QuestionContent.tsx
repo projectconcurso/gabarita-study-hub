@@ -434,33 +434,78 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
       })),
     };
 
+    const isMobile = window.innerWidth < 640;
+    
     const options = {
       responsive: true,
       maintainAspectRatio: true,
+      layout: {
+        padding: {
+          left: isMobile ? 5 : 10,
+          right: isMobile ? 5 : 10,
+          top: isMobile ? 5 : 10,
+          bottom: isMobile ? 5 : 10,
+        },
+      },
       plugins: {
         legend: {
           position: 'top' as const,
+          labels: {
+            font: {
+              size: isMobile ? 10 : 12,
+            },
+            padding: isMobile ? 8 : 10,
+            boxWidth: isMobile ? 12 : 15,
+          },
         },
         title: {
           display: true,
           text: chartData.titulo,
           font: {
-            size: 16,
+            size: isMobile ? 12 : 16,
             weight: 'bold' as const,
+          },
+          padding: {
+            top: isMobile ? 5 : 10,
+            bottom: isMobile ? 10 : 15,
           },
         },
       },
       scales: chartData.tipo !== 'pie' ? {
         x: {
+          ticks: {
+            font: {
+              size: isMobile ? 9 : 11,
+            },
+            maxRotation: isMobile ? 45 : 0,
+            minRotation: isMobile ? 45 : 0,
+            autoSkip: true,
+            maxTicksLimit: isMobile ? 6 : 10,
+          },
           title: {
             display: !!chartData.eixoX,
             text: chartData.eixoX || '',
+            font: {
+              size: isMobile ? 10 : 12,
+            },
           },
         },
         y: {
+          ticks: {
+            font: {
+              size: isMobile ? 9 : 11,
+            },
+            maxTicksLimit: isMobile ? 6 : 8,
+          },
           title: {
             display: !!chartData.eixoY,
             text: chartData.eixoY || '',
+            font: {
+              size: isMobile ? 10 : 12,
+            },
+            padding: {
+              bottom: isMobile ? 5 : 10,
+            },
           },
         },
       } : undefined,
@@ -477,7 +522,7 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
               Gráfico
             </p>
           </div>
-          <div className="w-full" style={{ maxHeight: '400px' }}>
+          <div className="w-full" style={{ maxHeight: window.innerWidth < 640 ? '280px' : '400px', minHeight: window.innerWidth < 640 ? '220px' : '300px' }}>
             {chartData.tipo === 'line' && <Line data={data} options={options} />}
             {chartData.tipo === 'bar' && <Bar data={data} options={options} />}
             {chartData.tipo === 'pie' && <Pie data={data} options={options} />}
