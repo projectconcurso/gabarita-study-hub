@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface PoliticaPrivacidadeModalProps {
   open: boolean;
@@ -15,8 +14,8 @@ interface PoliticaPrivacidadeModalProps {
 export function PoliticaPrivacidadeModal({ open, onOpenChange }: PoliticaPrivacidadeModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl max-h-[85vh] sm:max-h-[90vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-4xl h-[85vh] sm:h-[90vh] flex flex-col p-0">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2 shrink-0">
           <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-black uppercase">
             Política de Privacidade – Plataforma Gabarit
           </DialogTitle>
@@ -25,7 +24,7 @@ export function PoliticaPrivacidadeModal({ open, onOpenChange }: PoliticaPrivaci
             Última atualização: 04 de abril de 2026
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-[calc(85vh-10rem)] sm:h-[calc(90vh-8rem)] pr-2 sm:pr-4">
+        <div className="overflow-y-auto flex-1 px-4 sm:px-6 pb-4 sm:pb-6">
           <div className="space-y-6 text-sm">
             <section>
               <h3 className="text-lg font-black uppercase mb-2">1. Controlador dos Dados</h3>
@@ -213,7 +212,7 @@ export function PoliticaPrivacidadeModal({ open, onOpenChange }: PoliticaPrivaci
               </p>
             </section>
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
