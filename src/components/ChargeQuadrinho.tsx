@@ -102,10 +102,10 @@ export function ChargeQuadrinho({ content }: ChargeQuadrinhoProps) {
                   {/* Personagem à esquerda */}
                   {isLeft && (
                     <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                      <div className="text-5xl sm:text-6xl filter drop-shadow-lg">
+                      <div className="text-6xl sm:text-7xl md:text-8xl filter drop-shadow-lg">
                         {dialog.emoji}
                       </div>
-                      <div className="text-[10px] font-bold text-gray-700 bg-white px-2 py-0.5 rounded-full border-2 border-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-gray-700 bg-white px-2 py-0.5 rounded-full border-2 border-gray-800">
                         {dialog.character}
                       </div>
                     </div>
@@ -114,7 +114,7 @@ export function ChargeQuadrinho({ content }: ChargeQuadrinhoProps) {
                   {/* Balão de fala */}
                   <div className="relative max-w-[70%] sm:max-w-[60%]">
                     <div className={`${style.container} px-4 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative`}>
-                      <p className={`${style.textColor} text-sm sm:text-base leading-relaxed font-comic`}>
+                      <p className={`${style.textColor} text-base sm:text-lg md:text-xl leading-relaxed font-comic`}>
                         {dialog.text}
                       </p>
                       
@@ -143,10 +143,10 @@ export function ChargeQuadrinho({ content }: ChargeQuadrinhoProps) {
                   {/* Personagem à direita */}
                   {!isLeft && (
                     <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                      <div className="text-5xl sm:text-6xl filter drop-shadow-lg">
+                      <div className="text-6xl sm:text-7xl md:text-8xl filter drop-shadow-lg">
                         {dialog.emoji}
                       </div>
-                      <div className="text-[10px] font-bold text-gray-700 bg-white px-2 py-0.5 rounded-full border-2 border-gray-800">
+                      <div className="text-xs sm:text-sm font-bold text-gray-700 bg-white px-2 py-0.5 rounded-full border-2 border-gray-800">
                         {dialog.character}
                       </div>
                     </div>

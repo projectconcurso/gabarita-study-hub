@@ -11,6 +11,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  ScatterController,
 } from 'chart.js';
 import { RelevoMap } from './RelevoMap';
 import { MapaVisual } from './MapaVisual';
@@ -26,7 +27,8 @@ ChartJS.register(
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ScatterController
 );
 
 interface QuestionContentProps {
@@ -35,10 +37,10 @@ interface QuestionContentProps {
 }
 
 interface ChartData {
-  tipo: 'line' | 'bar' | 'pie';
+  tipo: 'line' | 'bar' | 'pie' | 'scatter';
   titulo: string;
   labels: string[];
-  datasets: Array<{ label: string; data: number[] }>;
+  datasets: Array<{ label: string; data: number[] | Array<{x: number; y: number}> }>;
   eixoX?: string;
   eixoY?: string;
 }
@@ -475,33 +477,33 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
         x: {
           ticks: {
             font: {
-              size: isMobile ? 9 : 11,
+              size: isMobile ? 8 : 11,
             },
-            maxRotation: isMobile ? 45 : 0,
-            minRotation: isMobile ? 45 : 0,
+            maxRotation: isMobile ? 90 : 0,
+            minRotation: isMobile ? 90 : 0,
             autoSkip: true,
-            maxTicksLimit: isMobile ? 6 : 10,
+            maxTicksLimit: isMobile ? 5 : 10,
           },
           title: {
             display: !!chartData.eixoX,
             text: chartData.eixoX || '',
             font: {
-              size: isMobile ? 10 : 12,
+              size: isMobile ? 9 : 12,
             },
           },
         },
         y: {
           ticks: {
             font: {
-              size: isMobile ? 9 : 11,
+              size: isMobile ? 8 : 11,
             },
-            maxTicksLimit: isMobile ? 6 : 8,
+            maxTicksLimit: isMobile ? 5 : 8,
           },
           title: {
             display: !!chartData.eixoY,
             text: chartData.eixoY || '',
             font: {
-              size: isMobile ? 10 : 12,
+              size: isMobile ? 9 : 12,
             },
             padding: {
               bottom: isMobile ? 5 : 10,
@@ -522,10 +524,11 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
               Gráfico
             </p>
           </div>
-          <div className="w-full" style={{ maxHeight: window.innerWidth < 640 ? '280px' : '400px', minHeight: window.innerWidth < 640 ? '220px' : '300px' }}>
+          <div className="w-full" style={{ maxHeight: window.innerWidth < 640 ? '320px' : '400px', minHeight: window.innerWidth < 640 ? '260px' : '300px' }}>
             {chartData.tipo === 'line' && <Line data={data} options={options} />}
             {chartData.tipo === 'bar' && <Bar data={data} options={options} />}
             {chartData.tipo === 'pie' && <Pie data={data} options={options} />}
+            {chartData.tipo === 'scatter' && <Line data={data} options={{...options, showLine: false}} />}
           </div>
         </div>
       </div>
