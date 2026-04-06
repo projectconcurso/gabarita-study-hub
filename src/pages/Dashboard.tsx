@@ -5,6 +5,7 @@ import Sidebar from "@/components/dashboard/Sidebar";
 import type { User } from "@supabase/supabase-js";
 import { isProfileComplete } from "@/lib/profileCompletion";
 import { MonetagVignette } from "@/components/ads/MonetagVignette";
+import { SuporteButton } from "@/components/SuporteButton";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -71,6 +72,8 @@ export default function Dashboard() {
       </main>
       {/* Monetag Vignette - Só carrega quando usuário está logado */}
       <MonetagVignette />
+      {/* Botão de Suporte Flutuante */}
+      <SuporteButton />
     </div>
   );
 }

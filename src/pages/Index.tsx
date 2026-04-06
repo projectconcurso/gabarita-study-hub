@@ -6,6 +6,7 @@ import { Users, TrendingUp, Target, MessageCircle, Award, Sparkles, Brain } from
 import { FocaLogo } from "@/components/FocaMascot";
 import { TermosUsoModal } from "@/components/TermosUsoModal";
 import { PoliticaPrivacidadeModal } from "@/components/PoliticaPrivacidadeModal";
+import { SuporteButton } from "@/components/SuporteButton";
 import featureAi from "@/assets/feature-ai.png";
 import featureSocial from "@/assets/feature-social.png";
 import featureProgress from "@/assets/feature-progress.png";
@@ -376,6 +377,7 @@ const Index = () => {
 
       <TermosUsoModal open={termosModalOpen} onOpenChange={setTermosModalOpen} />
       <PoliticaPrivacidadeModal open={privacidadeModalOpen} onOpenChange={setPrivacidadeModalOpen} />
+      <SuporteButton />
     </div>
   );
 };
