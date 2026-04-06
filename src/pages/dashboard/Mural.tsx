@@ -585,19 +585,29 @@ export default function Mural() {
             <Card key={post.id} className="rounded-[2rem] border-4 border-border bg-white shadow-medium">
               <CardHeader className="border-b-2 border-border/70">
                 <div className="flex items-start gap-3">
-                  <Avatar className="border-2 border-border">
-                    {post.profiles.foto_url ? (
-                      <img src={post.profiles.foto_url} alt={`${post.profiles.nome} ${post.profiles.sobrenome}`.trim()} className="h-full w-full object-cover" />
-                    ) : (
-                      <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
-                        {post.profiles.nome[0]}{post.profiles.sobrenome[0] || ""}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/dashboard/amigos/${post.user_id}`)}
+                    className="shrink-0"
+                  >
+                    <Avatar className="border-2 border-border cursor-pointer hover:opacity-80 transition-opacity">
+                      {post.profiles.foto_url ? (
+                        <img src={post.profiles.foto_url} alt={`${post.profiles.nome} ${post.profiles.sobrenome}`.trim()} className="h-full w-full object-cover" />
+                      ) : (
+                        <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
+                          {post.profiles.nome[0]}{post.profiles.sobrenome[0] || ""}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </button>
                   <div className="min-w-0 flex-1">
-                    <p className="font-black uppercase">
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/dashboard/amigos/${post.user_id}`)}
+                      className="text-left font-black uppercase hover:underline"
+                    >
                       {post.profiles.nome} {post.profiles.sobrenome}
-                    </p>
+                    </button>
                     <p className="text-sm font-semibold text-muted-foreground">
                       {formatDate(post.created_at)}
                     </p>

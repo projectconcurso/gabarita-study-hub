@@ -21,12 +21,11 @@ export default function MeusEstudos() {
       <div className="grid gap-6 md:grid-cols-2">
         {/* Meu Cronograma de Estudos */}
         <Card 
-          className="group cursor-pointer rounded-[2rem] border-4 border-border bg-white shadow-medium transition-all hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-soft"
-          onClick={() => navigate("/dashboard/meu-cronograma")}
+          className="rounded-[2rem] border-4 border-border bg-white shadow-medium"
         >
-          <CardHeader className="border-b-4 border-border bg-gradient-to-br from-blue-50 to-green-50 rounded-t-[1.7rem]">
+          <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
             <div className="flex items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-green-500 border-4 border-border">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#3B82F6] border-4 border-border">
                 <Calendar className="h-8 w-8 text-white" />
               </div>
               <div>
@@ -58,11 +57,8 @@ export default function MeusEstudos() {
                 </div>
               </div>
               <Button 
-                className="w-full rounded-full border-2 border-border bg-gradient-to-r from-blue-500 to-green-500 text-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/dashboard/meu-cronograma");
-                }}
+                className="w-full rounded-full border-2 border-border bg-[#3B82F6] text-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                onClick={() => navigate("/dashboard/meu-cronograma")}
               >
                 Acessar Cronograma
               </Button>
@@ -72,12 +68,11 @@ export default function MeusEstudos() {
 
         {/* Simulados Livres */}
         <Card 
-          className="group cursor-pointer rounded-[2rem] border-4 border-border bg-white shadow-medium transition-all hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-soft"
-          onClick={() => navigate("/dashboard/simulados")}
+          className="rounded-[2rem] border-4 border-border bg-white shadow-medium"
         >
-          <CardHeader className="border-b-4 border-border bg-gradient-to-br from-purple-50 to-pink-50 rounded-t-[1.7rem]">
+          <CardHeader className="border-b-4 border-border bg-muted rounded-t-[1.7rem]">
             <div className="flex items-center gap-3">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-4 border-border">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#A855F7] border-4 border-border">
                 <Brain className="h-8 w-8 text-white" />
               </div>
               <div>
@@ -109,11 +104,8 @@ export default function MeusEstudos() {
                 </div>
               </div>
               <Button 
-                className="w-full rounded-full border-2 border-border bg-gradient-to-r from-purple-500 to-pink-500 text-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/dashboard/simulados");
-                }}
+                className="w-full rounded-full border-2 border-border bg-[#A855F7] text-white font-black uppercase shadow-soft hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+                onClick={() => navigate("/dashboard/simulados")}
               >
                 Criar Simulado Livre
               </Button>
