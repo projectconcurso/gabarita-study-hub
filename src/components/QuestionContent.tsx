@@ -437,11 +437,10 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
     };
 
     const isMobile = window.innerWidth < 640;
-    const isVerySmall = window.innerWidth < 400;
     
     const options = {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       layout: {
         padding: {
           left: isMobile ? 10 : 10,
@@ -453,64 +452,50 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
       plugins: {
         legend: {
           position: 'top' as const,
-          display: !isVerySmall,
+          display: true,
           labels: {
             font: {
               size: isMobile ? 9 : 12,
             },
-            padding: isMobile ? 6 : 10,
+            padding: isMobile ? 4 : 10,
             boxWidth: isMobile ? 10 : 15,
           },
         },
         title: {
-          display: !isMobile,
-          text: chartData.titulo,
-          font: {
-            size: 16,
-            weight: 'bold' as const,
-          },
-          padding: {
-            top: 10,
-            bottom: 15,
-          },
+          display: false,
         },
       },
       scales: chartData.tipo !== 'pie' ? {
         x: {
           ticks: {
             font: {
-              size: isMobile ? 7 : 11,
+              size: isMobile ? 8 : 11,
             },
             maxRotation: isMobile ? 90 : 0,
             minRotation: isMobile ? 90 : 0,
             autoSkip: true,
-            maxTicksLimit: isMobile ? 4 : 10,
-            padding: isMobile ? 5 : 0,
+            maxTicksLimit: isMobile ? 5 : 10,
           },
           title: {
-            display: !isMobile && !!chartData.eixoX,
+            display: !!chartData.eixoX,
             text: chartData.eixoX || '',
             font: {
-              size: 12,
+              size: isMobile ? 9 : 12,
             },
           },
         },
         y: {
           ticks: {
             font: {
-              size: isMobile ? 7 : 11,
+              size: isMobile ? 8 : 11,
             },
-            maxTicksLimit: isMobile ? 4 : 8,
-            padding: isMobile ? 5 : 0,
+            maxTicksLimit: isMobile ? 5 : 8,
           },
           title: {
-            display: false,
+            display: !!chartData.eixoY,
             text: chartData.eixoY || '',
             font: {
-              size: 12,
-            },
-            padding: {
-              bottom: 10,
+              size: isMobile ? 9 : 12,
             },
           },
         },
@@ -518,8 +503,8 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
     };
 
     return (
-      <div className="my-4 rounded-[1.5rem] border-2 border-border bg-white p-4">
-        <div className="space-y-3">
+      <div className="my-4 rounded-[1.5rem] border-2 border-border bg-white p-3 sm:p-4">
+        <div className="space-y-2">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 border-border bg-primary text-primary-foreground">
               <BarChart3 className="h-5 w-5" />
@@ -528,7 +513,12 @@ export function QuestionContent({ content, imageUrl }: QuestionContentProps) {
               Gráfico
             </p>
           </div>
-          <div className="w-full overflow-x-auto" style={{ maxHeight: window.innerWidth < 640 ? '400px' : '400px', minHeight: window.innerWidth < 640 ? '350px' : '300px' }}>
+          {chartData.titulo && (
+            <h3 className="text-sm sm:text-base font-bold text-center text-foreground">
+              {chartData.titulo}
+            </h3>
+          )}
+          <div className="w-full" style={{ height: isMobile ? '400px' : '350px' }}>
             {chartData.tipo === 'line' && <Line data={data} options={options} />}
             {chartData.tipo === 'bar' && <Bar data={data} options={options} />}
             {chartData.tipo === 'pie' && <Pie data={data} options={options} />}
