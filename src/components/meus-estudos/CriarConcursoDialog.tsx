@@ -184,7 +184,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
               <Input
                 id="data_prova"
                 type="date"
-                className="h-12 rounded-2xl border-2 border-border bg-white"
+                className="h-12 w-full max-w-full rounded-2xl border-2 border-border bg-white"
                 value={formData.data_prova}
                 onChange={(e) => setFormData({ ...formData, data_prova: e.target.value })}
               />
