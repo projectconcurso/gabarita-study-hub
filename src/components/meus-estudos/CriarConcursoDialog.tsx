@@ -139,7 +139,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
           Crie Cronograma de Estudos
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden rounded-[2rem] border-4 border-border bg-white shadow-strong sm:max-w-2xl">
+      <DialogContent className="flex max-h-[90vh] w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[2rem] border-4 border-border bg-white shadow-strong sm:max-w-2xl sm:w-full">
         <DialogHeader>
           <DialogTitle className="text-2xl font-black uppercase">Criar Cronograma de Estudos</DialogTitle>
           <DialogDescription className="font-semibold text-muted-foreground">
@@ -147,16 +147,16 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 space-y-4 overflow-y-auto py-4 pr-1">
+        <div className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden py-4 pr-1">
           {/* Informações Básicas */}
-          <div className="space-y-4 rounded-[1.5rem] border-2 border-border bg-muted p-4">
+          <div className="space-y-4 rounded-[1.5rem] border-2 border-border bg-muted p-3 sm:p-4">
             <h3 className="text-sm font-black uppercase">Informações Básicas</h3>
             
             <div className="space-y-2">
               <Label htmlFor="nome">Nome do Concurso/Prova *</Label>
               <Input
                 id="nome"
-                placeholder="Ex: ENEM 2024, Concurso TJ-SP"
+                placeholder="Ex: ENEM 2024"
                 className="h-12 rounded-2xl border-2 border-border bg-white"
                 value={formData.nome}
                 onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
@@ -194,7 +194,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
               <Label htmlFor="descricao">Descrição (opcional)</Label>
               <Textarea
                 id="descricao"
-                placeholder="Adicione observações sobre o concurso..."
+                placeholder="Observações..."
                 className="min-h-20 rounded-2xl border-2 border-border bg-white"
                 value={formData.descricao}
                 onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
@@ -204,14 +204,14 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
 
           {/* Matérias e Assuntos */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <h3 className="text-sm font-black uppercase">Matérias e Assuntos</h3>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={adicionarMateria}
-                className="rounded-full border-2 border-border font-bold"
+                className="rounded-full border-2 border-border font-bold text-xs sm:text-sm"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar Matéria
@@ -221,13 +221,13 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
             {formData.materias.map((materia, materiaIndex) => (
               <div
                 key={materiaIndex}
-                className="space-y-3 rounded-[1.5rem] border-2 border-border bg-muted p-4"
+                className="space-y-3 rounded-[1.5rem] border-2 border-border bg-muted p-3 sm:p-4"
               >
                 <div className="flex items-start gap-2">
                   <div className="flex-1 space-y-2">
                     <Label>Matéria {materiaIndex + 1}</Label>
                     <Input
-                      placeholder="Ex: Matemática, Português"
+                      placeholder="Ex: Matemática"
                       className="h-12 rounded-2xl border-2 border-border bg-white"
                       value={materia.nome}
                       onChange={(e) => atualizarMateria(materiaIndex, e.target.value)}
@@ -246,7 +246,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
                   )}
                 </div>
 
-                <div className="space-y-2 pl-4">
+                <div className="space-y-2 pl-2 sm:pl-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs">Assuntos</Label>
                     <Button
@@ -264,7 +264,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
                   {materia.assuntos.map((assunto, assuntoIndex) => (
                     <div key={assuntoIndex} className="flex items-center gap-2">
                       <Input
-                        placeholder="Ex: Álgebra, Geometria"
+                        placeholder="Ex: Álgebra"
                         className="h-10 rounded-xl border-2 border-border bg-white text-sm"
                         value={assunto.nome}
                         onChange={(e) =>
@@ -290,7 +290,7 @@ export function CriarConcursoDialog({ open, onOpenChange, userId, onSuccess }: C
           </div>
         </div>
 
-        <div className="flex gap-3 border-t-2 border-border pt-4">
+        <div className="flex flex-col gap-2 border-t-2 border-border pt-4 sm:flex-row sm:gap-3">
           <Button
             type="button"
             variant="outline"
