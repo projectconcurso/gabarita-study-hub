@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -445,7 +446,7 @@ export default function Amigos() {
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="border-2 border-border">
                       {profile.foto_url ? (
-                        <img src={profile.foto_url} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
+                        <img src={sanitizeImageUrl(profile.foto_url)} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
                       ) : (
                         <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">{profile.nome[0]}{profile.sobrenome[0]}</AvatarFallback>
                       )}
@@ -498,7 +499,7 @@ export default function Amigos() {
                 <div className="flex min-w-0 items-center gap-3">
                   <Avatar className="border-2 border-border">
                     {request.profile.foto_url ? (
-                      <img src={request.profile.foto_url} alt={`${request.profile.nome} ${request.profile.sobrenome}`} className="h-full w-full object-cover" />
+                      <img src={sanitizeImageUrl(request.profile.foto_url)} alt={`${request.profile.nome} ${request.profile.sobrenome}`} className="h-full w-full object-cover" />
                     ) : (
                       <AvatarFallback className="bg-accent font-black text-accent-foreground">
                         {request.profile.nome[0]}{request.profile.sobrenome[0]}
@@ -568,7 +569,7 @@ export default function Amigos() {
                     <div className="flex min-w-0 items-center gap-3">
                       <Avatar className="h-14 w-14 border-2 border-border">
                         {profile.foto_url ? (
-                          <img src={profile.foto_url} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
+                          <img src={sanitizeImageUrl(profile.foto_url)} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
                         ) : (
                           <AvatarFallback className="bg-secondary font-black text-secondary-foreground">{profile.nome[0]}{profile.sobrenome[0]}</AvatarFallback>
                         )}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -592,7 +593,7 @@ export default function Mural() {
                   >
                     <Avatar className="border-2 border-border cursor-pointer hover:opacity-80 transition-opacity">
                       {post.profiles.foto_url ? (
-                        <img src={post.profiles.foto_url} alt={`${post.profiles.nome} ${post.profiles.sobrenome}`.trim()} className="h-full w-full object-cover" />
+                        <img src={sanitizeImageUrl(post.profiles.foto_url)} alt={`${post.profiles.nome} ${post.profiles.sobrenome}`.trim()} className="h-full w-full object-cover" />
                       ) : (
                         <AvatarFallback className="bg-[#f7cf3d] font-black text-foreground">
                           {post.profiles.nome[0]}{post.profiles.sobrenome[0] || ""}

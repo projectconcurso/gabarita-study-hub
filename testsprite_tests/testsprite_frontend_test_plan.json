@@ -1,0 +1,1345 @@
+[
+  {
+    "id": "TC001",
+    "title": "Login reaches dashboard",
+    "description": "Verifies a returning user can log in with valid credentials and reach the dashboard.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Complete profile after signup and reach dashboard",
+    "description": "Verifies a newly registered user can complete required profile fields and is redirected to the dashboard successfully.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Fill valid required profile information into all required fields"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Take a practice exam end-to-end to results",
+    "description": "Verifies a student can start a practice exam, answer questions with navigation, submit, and reach a results view.",
+    "category": "Practice Exams",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open the practice exams list"
+      },
+      {
+        "type": "action",
+        "description": "Choose an available practice exam from the list"
+      },
+      {
+        "type": "action",
+        "description": "Start the exam"
+      },
+      {
+        "type": "action",
+        "description": "Select an answer option for the current question"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to a different question"
+      },
+      {
+        "type": "action",
+        "description": "Select an answer option for that question"
+      },
+      {
+        "type": "action",
+        "description": "Submit the exam"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a results view with score and XP feedback is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Sign up reaches email confirmation step",
+    "description": "Verifies a prospective visitor can register with name, email, and password and is taken to the email confirmation step.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /signup"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test User into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill test.user+{{RANDOM}}@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill ValidPass123! into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the signup form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the confirm email page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Complete profile saves and enters dashboard",
+    "description": "Verifies an authenticated new user can complete missing profile information, save it, and reach the dashboard.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /complete-profile"
+      },
+      {
+        "type": "action",
+        "description": "Fill valid required profile information in the form"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Starting a Gabaritos-cost exam deducts once",
+    "description": "Verifies starting a practice exam with a Gabaritos cost results in a single deduction and does not double-deduct when reloading the exam page.",
+    "category": "Practice Exams",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open the practice exams list"
+      },
+      {
+        "type": "action",
+        "description": "Choose a practice exam that requires a Gabaritos cost"
+      },
+      {
+        "type": "action",
+        "description": "Start the exam"
+      },
+      {
+        "type": "action",
+        "description": "Record the current displayed Gabaritos balance"
+      },
+      {
+        "type": "action",
+        "description": "Press F5 to reload the page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the displayed Gabaritos balance reflects only a single deduction for the exam start"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Study schedule cards appear after creating a schedule",
+    "description": "Verifies a student can create a study schedule with exam details, subjects, and topics and sees it listed as a schedule card.",
+    "category": "Study Schedule",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open study schedule management"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new study schedule"
+      },
+      {
+        "type": "action",
+        "description": "Fill Concurso E2E {{RANDOM}} into the exam name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid education level"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid future date into the exam date field"
+      },
+      {
+        "type": "action",
+        "description": "Add at least one subject and at least one topic"
+      },
+      {
+        "type": "action",
+        "description": "Create the schedule"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify study schedule cards are displayed and include the newly created schedule"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Create a text-only post and see it in the feed",
+    "description": "Verifies a logged-in user can publish a new text post and it appears in the social feed.",
+    "category": "Social Feed",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the social feed"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new post"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Post TC001\" into the post text field"
+      },
+      {
+        "type": "action",
+        "description": "Publish the post"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new post appears in the feed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "View profile with XP and Gabaritos balances",
+    "description": "Verifies the profile page loads and displays the user's profile information including XP and Gabaritos balance.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify XP and Gabaritos balance are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Search for users and send a friend request",
+    "description": "Verifies a user can search for another user and send a friend request that shows as pending.",
+    "category": "Friends Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open friends management"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"test\" into the user search field"
+      },
+      {
+        "type": "action",
+        "description": "Send a friend request to the first result"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the request shows as a pending outgoing request"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Edit name and bio and persist changes",
+    "description": "Verifies a user can update their name and bio and the updated information is shown after saving.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Fill Test User Updated into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill Bio updated for UI test into the bio field"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated name and bio are displayed on the profile page"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Open schedule details shows timeline and subject breakdown",
+    "description": "Verifies a student can open a schedule card and view its detailed timeline and subject breakdown.",
+    "category": "Study Schedule",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open study schedule management"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new study schedule"
+      },
+      {
+        "type": "action",
+        "description": "Fill Concurso Detalhes {{RANDOM}} into the exam name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid education level"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid future date into the exam date field"
+      },
+      {
+        "type": "action",
+        "description": "Add at least one subject and at least one topic"
+      },
+      {
+        "type": "action",
+        "description": "Create the schedule"
+      },
+      {
+        "type": "action",
+        "description": "Open the newly created schedule card"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the schedule detail view shows a timeline and a subject breakdown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Like a post and add a comment",
+    "description": "Verifies a user can like a post and add a comment that appears under the post.",
+    "category": "Social Feed",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the social feed"
+      },
+      {
+        "type": "action",
+        "description": "Like the first post in the feed"
+      },
+      {
+        "type": "action",
+        "description": "Add a comment \"Comment TC002\" to the same post"
+      },
+      {
+        "type": "action",
+        "description": "Submit the comment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new comment appears under the post"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Track study progress persists after reload",
+    "description": "Verifies a student can mark progress for a subject in schedule details and the updated progress remains after a page reload.",
+    "category": "Study Schedule",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open study schedule management"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new study schedule"
+      },
+      {
+        "type": "action",
+        "description": "Fill Concurso Progresso {{RANDOM}} into the exam name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid education level"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid future date into the exam date field"
+      },
+      {
+        "type": "action",
+        "description": "Add at least one subject and at least one topic"
+      },
+      {
+        "type": "action",
+        "description": "Create the schedule"
+      },
+      {
+        "type": "action",
+        "description": "Open the newly created schedule card"
+      },
+      {
+        "type": "action",
+        "description": "Mark progress for one subject using the available progress control"
+      },
+      {
+        "type": "action",
+        "description": "Press F5 to reload the page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the previously marked subject progress is still reflected in the schedule details"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Accept an incoming friend request and see the new friend",
+    "description": "Verifies a user can accept an incoming friend request and the requester appears in the friends list.",
+    "category": "Friends Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open friends management"
+      },
+      {
+        "type": "action",
+        "description": "Open the incoming friend requests section"
+      },
+      {
+        "type": "action",
+        "description": "Accept the first incoming friend request"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the accepted user appears in the friends list"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Change password from profile settings",
+    "description": "Verifies a user can submit a password change from profile settings and sees a confirmation state in the UI.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Open the password change section"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid new password into the new password field"
+      },
+      {
+        "type": "action",
+        "description": "Fill the same valid new password into the confirm password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the password change"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a password change confirmation is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Practice exam answers persist when revisiting questions",
+    "description": "Verifies selected answers remain selected when navigating away and returning to previously answered questions during an exam.",
+    "category": "Practice Exams",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation to open the practice exams list"
+      },
+      {
+        "type": "action",
+        "description": "Choose an available practice exam from the list"
+      },
+      {
+        "type": "action",
+        "description": "Start the exam"
+      },
+      {
+        "type": "action",
+        "description": "Select an answer option for the current question"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the next question"
+      },
+      {
+        "type": "action",
+        "description": "Navigate back to the previous question"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the previously selected answer is still selected on the question"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Send a message in an existing conversation",
+    "description": "Verifies a user can open a conversation and send a message that appears in the chat history.",
+    "category": "Direct Messaging",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open chat"
+      },
+      {
+        "type": "action",
+        "description": "Open the first conversation in the conversation list"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"Message TC011\" into the message input field"
+      },
+      {
+        "type": "action",
+        "description": "Send the message"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new message appears in the conversation history"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Remove a friend from the friends list",
+    "description": "Verifies a user can remove an existing friend and the friend no longer appears in the list.",
+    "category": "Friends Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open friends management"
+      },
+      {
+        "type": "action",
+        "description": "Remove the first friend in the friends list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the removed friend no longer appears in the friends list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC020",
+    "title": "Validate required fields when saving profile",
+    "description": "Verifies the profile form prevents saving when required fields are cleared and shows a validation error.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Clear the name field"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a required-field validation error is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile changes are not saved"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC021",
+    "title": "Open a user profile from a post",
+    "description": "Verifies a user can navigate from a post author to that user's public profile view.",
+    "category": "Social Feed",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the social feed"
+      },
+      {
+        "type": "action",
+        "description": "Open the author profile from the first post in the feed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a user profile page is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "Update email from profile settings",
+    "description": "Verifies a user can submit an email update from profile settings and sees a confirmation state in the UI.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Open the email update section"
+      },
+      {
+        "type": "action",
+        "description": "Fill test+updated@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the email update"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email update confirmation is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "View conversation history grouped by date",
+    "description": "Verifies the conversation history displays date group separators while scrolling through messages.",
+    "category": "Direct Messaging",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open chat"
+      },
+      {
+        "type": "action",
+        "description": "Open the first conversation in the conversation list"
+      },
+      {
+        "type": "action",
+        "description": "Scroll up within the message history to load earlier messages"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify messages are grouped by date in the history"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "Cancel editing does not change profile information",
+    "description": "Verifies leaving the profile edit state without saving does not change the displayed profile information.",
+    "category": "User Profile",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Record the currently displayed name value"
+      },
+      {
+        "type": "action",
+        "description": "Fill Temp Name Not Saved into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the dashboard using the app navigation"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the user profile settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the displayed name value is unchanged from the previously recorded value"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Open a friend profile from the friends list",
+    "description": "Verifies a user can open a friend's profile page from the friends list.",
+    "category": "Friends Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open friends management"
+      },
+      {
+        "type": "action",
+        "description": "Open the profile for the first friend in the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a friend profile page is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Prevent publishing an empty post",
+    "description": "Verifies the user cannot publish a post without content and receives a validation indication.",
+    "category": "Social Feed",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the social feed"
+      },
+      {
+        "type": "action",
+        "description": "Start creating a new post"
+      },
+      {
+        "type": "action",
+        "description": "Publish the post without adding content"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error is visible and the post is not published"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC027",
+    "title": "Prevent sending an empty chat message",
+    "description": "Verifies the user cannot send a blank message and receives a validation indication.",
+    "category": "Direct Messaging",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open chat"
+      },
+      {
+        "type": "action",
+        "description": "Open the first conversation in the conversation list"
+      },
+      {
+        "type": "action",
+        "description": "Send the message without entering text"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a validation error is visible and no message is added to the history"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC028",
+    "title": "Invalid login shows error feedback",
+    "description": "Verifies a user entering invalid credentials sees an invalid-credentials error and is not logged in.",
+    "category": "User Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill invalid.user@example.com into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill WrongPassword123! into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an invalid-credentials error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC029",
+    "title": "View social feed when there are no posts",
+    "description": "Verifies the social feed shows a clear empty state when there are no posts to display.",
+    "category": "Social Feed",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open the social feed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for the feed"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC030",
+    "title": "Empty chat state when there are no conversations",
+    "description": "Verifies the chat page shows an empty state when the user has no conversations.",
+    "category": "Direct Messaging",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open chat"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible for conversations"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC031",
+    "title": "Search with no matches shows empty state",
+    "description": "Verifies searching for a non-existent user shows a clear no-results state.",
+    "category": "Friends Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_USER}} into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill {{LOGIN_PASSWORD}} into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation item to open friends management"
+      },
+      {
+        "type": "action",
+        "description": "Fill \"user-does-not-exist-xyz\" into the user search field"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a no-results empty state is visible for the search"
+      }
+    ],
+    "priority": "Low"
+  }
+]

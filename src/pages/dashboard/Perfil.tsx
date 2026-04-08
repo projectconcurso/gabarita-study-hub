@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -374,7 +376,7 @@ export default function Perfil() {
                       <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-border bg-secondary">
                         {profile.foto_url ? (
                           <img
-                            src={profile.foto_url}
+                            src={sanitizeImageUrl(profile.foto_url)}
                             alt="Foto de perfil"
                             className="h-full w-full object-cover"
                           />

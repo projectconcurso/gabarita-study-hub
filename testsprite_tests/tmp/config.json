@@ -1,0 +1,20 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:4173",
+  "loginUser": "felflexa@yahoo.com",
+  "loginPassword": "augusto14",
+  "executionArgs": {
+    "projectName": "gabarita-study-hub",
+    "projectPath": "/Users/felipeflexa/Documents/focaai/gabarita-study-hub",
+    "testIds": [],
+    "additionalInstruction": "",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-aWeS_R02WoGVizx2wWfdevCN36LcXKX43iz7vc80KuAGK1E_3mVcY3UJIfenMO9uwME3GpxS9Vk7FuSP0z7N24jFi31ZbfYqXJfuFpkaaRoHnK_7NJ6CMrb3nmMonsCJx1M"
+    }
+  },
+  "serverPort": 60600,
+  "proxy": "http://342049d8-435f-41d0-ae10-26dd7cf3fc30:RbZ261u5uZ45gsbQOdoxC65e4eu8eRpT@tun.testsprite.com:8080"
+}

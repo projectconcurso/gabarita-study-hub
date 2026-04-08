@@ -1,4 +1,5 @@
-import * as React from "react";
+import * as React from "react"
+import { createSecureCookie } from "@/lib/security";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
@@ -65,7 +66,10 @@ const SidebarProvider = React.forwardRef<
       }
 
       // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      document.cookie = createSecureCookie(SIDEBAR_COOKIE_NAME, String(openState), {
+        maxAge: SIDEBAR_COOKIE_MAX_AGE,
+        path: '/'
+      });
     },
     [setOpenProp, open],
   );

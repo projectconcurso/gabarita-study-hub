@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { safeRedirect } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FocaLogo } from "@/components/FocaMascot";
 import { Check, Sparkles, Zap, Gift } from "lucide-react";
 import { toast } from "sonner";
+
+interface ProfileData {
+  nome: string;
+  sobrenome: string;
+}
 
 export default function PlanSelection() {
   const navigate = useNavigate();
@@ -39,7 +45,7 @@ export default function PlanSelection() {
         .from('profiles')
         .select('nome, sobrenome')
         .eq('id', session.user.id)
-        .single();
+        .single<ProfileData>();
 
       setUserData({
         userId: session.user.id,
@@ -81,7 +87,7 @@ export default function PlanSelection() {
       }
 
       if (subscriptionData?.checkoutUrl) {
-        window.location.href = subscriptionData.checkoutUrl;
+        safeRedirect(subscriptionData.checkoutUrl, '/plan-selection');
         return;
       }
 

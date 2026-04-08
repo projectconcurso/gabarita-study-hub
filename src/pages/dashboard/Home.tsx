@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import {
   ArrowRight,
   Brain,
@@ -461,7 +462,7 @@ export default function DashboardHome() {
                     return (
                       <div key={friend.id} className="flex items-center gap-3 rounded-[1.3rem] border-2 border-border bg-muted p-4">
                         <Avatar className="h-12 w-12 border-2 border-border">
-                          {friend.foto_url ? <img src={friend.foto_url} alt={fullName} className="h-full w-full object-cover" /> : null}
+                          {friend.foto_url ? <img src={sanitizeImageUrl(friend.foto_url)} alt={fullName} className="h-full w-full object-cover" /> : null}
                           <AvatarFallback className="bg-secondary font-black text-secondary-foreground">
                             {initials}
                           </AvatarFallback>

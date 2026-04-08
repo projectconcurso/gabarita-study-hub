@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -94,7 +95,7 @@ export default function CompleteProfile() {
         .from("profiles")
         .select("nome, sobrenome, foto_url, escolaridade, curso, data_nascimento, cidade, estado, area_forte, area_fraca, cargo_desejado")
         .eq("id", session.user.id)
-        .single();
+        .single<ProfileData>();
 
       if (error && error.code !== "PGRST116") {
         toast.error("Erro ao carregar dados do cadastro.");
@@ -220,7 +221,7 @@ export default function CompleteProfile() {
         ...profile,
         data_nascimento: profile.data_nascimento || null,
         updated_at: new Date().toISOString(),
-      },
+      } as any,
       { onConflict: "id" }
     );
 
@@ -278,7 +279,7 @@ export default function CompleteProfile() {
                       <div className="relative">
                         <div className="flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-border bg-secondary">
                           {profile.foto_url ? (
-                            <img src={profile.foto_url} alt="Foto de perfil" className="h-full w-full object-cover" />
+                            <img src={sanitizeImageUrl(profile.foto_url)} alt="Foto de perfil" className="h-full w-full object-cover" />
                           ) : (
                             <Camera className="h-10 w-10 text-muted-foreground" />
                           )}

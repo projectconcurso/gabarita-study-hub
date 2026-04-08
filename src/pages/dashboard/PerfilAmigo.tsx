@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { sanitizeImageUrl } from "@/lib/security";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -297,7 +298,7 @@ export default function PerfilAmigo() {
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <Avatar className="h-24 w-24 border-4 border-border">
               {profile.foto_url ? (
-                <img src={profile.foto_url} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
+                <img src={sanitizeImageUrl(profile.foto_url)} alt={`${profile.nome} ${profile.sobrenome}`} className="h-full w-full object-cover" />
               ) : (
                 <AvatarFallback className="bg-secondary font-black text-secondary-foreground text-2xl">
                   {profile.nome[0]}{profile.sobrenome[0]}
